@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos chantiers — SARL Façades A.Z</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --green:      #5a9e1a;
+    --green-dark: #3d6e10;
+    --green-mid:  #2a7a40;
+    --green-deep: #1a5a30;
+    --orange:     #c97d10;
+    --blue:       #1a5fa8;
+    --off-white:  #f4f5f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: 'Barlow', sans-serif; background: white; display: flex; flex-direction: column; }
+
+  .map-wrapper {
+    position: relative;
+    width: 100%; height: 560px;
+    overflow: hidden;
+    flex: 1;
+  }
+  #map { width: 100%; height: 100%; }
+  .map-wrapper::after {
+    content: '';
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.2);
+    pointer-events: none; z-index: 400;
+  }
+
+  /* LÉGENDE */
+  .legend-bar {
+    background: white;
+    border-top: 3px solid var(--green);
+    padding: 13px 20px;
+    display: flex; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .legend-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: #999; margin-right: 4px; white-space: nowrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 13px 5px 9px;
+    border-radius: 20px; border: 1.5px solid #e0e0e0;
+    cursor: pointer; transition: all 0.18s;
+    background: var(--off-white); user-select: none;
+  }
+  .legend-item:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+  .legend-item.active { background: white; }
+  .legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  .legend-item span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+  }
+  .legend-reset {
+    margin-left: auto; font-size: 12px; font-weight: 600;
+    color: #bbb; cursor: pointer; padding: 5px 10px;
+    border-radius: 4px; transition: color 0.15s; white-space: nowrap;
+  }
+  .legend-reset:hover { color: var(--green); }
+
+  /* POPUP */
+  .chantier-popup {
+    position: fixed; z-index: 9999;
+    pointer-events: none; width: 230px;
+    transform: translate(-50%, calc(-100% - 22px));
+    opacity: 0; transition: opacity 0.15s ease;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
+  }
+  .chantier-popup.visible { opacity: 1; }
+  .popup-inner {
+    background: #1c2b1c; border-radius: 10px;
+    overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
+  }
+  .popup-photo-placeholder {
+    width: 100%; height: 125px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 7px;
+    position: relative; overflow: hidden; background: #243024;
+  }
+  .popup-photo-placeholder::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .ph-icon { font-size: 30px; position: relative; z-index: 1; opacity: 0.55; }
+  .ph-text {
+    font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: rgba(255,255,255,0.25);
+    position: relative; z-index: 1;
+  }
+  .popup-stripe { height: 3px; width: 100%; }
+  .popup-body { padding: 10px 13px 12px; }
+  .popup-specialty {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;
+  }
+  .popup-town {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 800;
+    color: white; letter-spacing: 0.5px; line-height: 1;
+  }
+  .popup-arrow {
+    width: 0; height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 9px solid #1c2b1c;
+    margin: 0 auto;
+  }
+
+  /* MARQUEURS */
+  .marker-wrap { position: relative; width: 34px; cursor: pointer; }
+  .marker-pin {
+    width: 34px; height: 34px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(255,255,255,0.35);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+    transition: transform 0.2s;
+  }
+  .pin-icon { transform: rotate(45deg); font-size: 13px; line-height: 1; }
+  .marker-shadow {
+    width: 8px; height: 3px;
+    background: rgba(0,0,0,0.25); border-radius: 50%;
+    margin: 2px auto 0; filter: blur(2px);
+  }
+  .marker-pulse {
+    position: absolute; top: 17px; left: 17px;
+    transform: translate(-50%, -50%);
+    width: 34px; height: 34px;
+    border-radius: 50%; border: 2px solid;
+    animation: pulseRing 2.8s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pulseRing {
+    0%   { transform: translate(-50%,-50%) scale(0.8); opacity: 0.5; }
+    100% { transform: translate(-50%,-50%) scale(2.4); opacity: 0; }
+  }
+
+  /* LEAFLET */
+  .leaflet-control-zoom { border: none !important; box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+  .leaflet-control-zoom a { background: rgba(28,43,28,0.92) !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+  .leaflet-control-zoom a:hover { background: var(--green) !important; }
+  .leaflet-control-attribution { background: rgba(0,0,0,0.35) !important; color: rgba(255,255,255,0.25) !important; font-size: 9px !important; }
+  .leaflet-control-attribution a { color: rgba(255,255,255,0.3) !important; }
+</style>
+</head>
+<body>
+
+<div class="map-wrapper">
+  <div id="map"></div>
+</div>
+
+<div class="legend-bar">
+  <span class="legend-label">Spécialités :</span>
+  <div class="legend-item active" style="border-color:#c8e6a0" onclick="filterMarkers('ite',this)">
+    <div class="legend-dot" style="background:#5a9e1a"></div>
+    <span style="color:#5a9e1a">Isolation extérieure</span>
+  </div>
+  <div class="legend-item active" style="border-color:#7aaa90" onclick="filterMarkers('joint',this)">
+    <div class="legend-dot" style="background:#1a5a30"></div>
+    <span style="color:#1a5a30">Joints de pierre</span>
+  </div>
+  <div class="legend-reset" onclick="resetFilter()">↺ Tout afficher</div>
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="chantier-popup">
+  <div class="popup-inner">
+    <div class="popup-photo-placeholder">
+      <span class="ph-icon" id="popupIcon">🏗️</span>
+      <span class="ph-text">Photo chantier</span>
+    </div>
+    <div class="popup-stripe" id="popupStripe"></div>
+    <div class="popup-body">
+      <div class="popup-specialty" id="popupSpec"></div>
+      <div class="popup-town" id="popupTown"></div>
+    </div>
+  </div>
+  <div class="popup-arrow"></div>
+</div>
+
+<script>
+// ── DONNÉES RÉELLES ──
+const chantiers = [
+  { lat:44.628, lng:4.388, town:"Aubenas",           type:"ite",   color:"#5a9e1a", specialty:"Isolation extérieure", icon:"🏠" },
+  { lat:44.615, lng:4.401, town:"Aubenas",           type:"ite",   color:"#5a9e1a", specialty:"Isolation extérieure", icon:"🏠" },
+  { lat:44.283, lng:4.295, town:"Laurac-en-Vivarais", type:"joint", color:"#1a5a30", specialty:"Joints de pierre",    icon:"⛏" },
+  { lat:44.647, lng:4.467, town:"Coux",              type:"joint", color:"#1a5a30", specialty:"Joints de pierre",     icon:"⛏" },
+];
+
+// ── CARTE ──
+const map = L.map('map', {
+  center: [44.55, 4.40],
+  zoom: 10,
+  zoomControl: true,
+  scrollWheelZoom: false,
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  subdomains: 'abcd', maxZoom: 18,
+  attribution: '© CartoDB © OpenStreetMap'
+}).addTo(map);
+
+// ── CONTOUR ARDÈCHE (GeoJSON depuis GitHub) ──
+fetch('https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements/07-ardeche/07-ardeche.json')
+  .then(r => r.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: '#5a9e1a',        // vert Façades A.Z
+        weight: 2,
+        opacity: 0.7,
+        fillColor: '#5a9e1a',
+        fillOpacity: 0.06,       // très léger, juste pour délimiter
+        dashArray: '6, 4',       // tirets fins = style technique/plan
+      }
+    }).addTo(map);
+  })
+  .catch(() => {
+    // Silencieux si pas de réseau — la carte reste fonctionnelle
+    console.log('Contour Ardèche non chargé');
+  });
+
+// ── POPUP ──
+const popup     = document.getElementById('popup');
+const popupIcon = document.getElementById('popupIcon');
+const popupStripe = document.getElementById('popupStripe');
+const popupSpec = document.getElementById('popupSpec');
+const popupTown = document.getElementById('popupTown');
+let hideTimer   = null;
+
+function showPopup(x, y, ch) {
+  clearTimeout(hideTimer);
+  popupIcon.textContent         = ch.icon;
+  popupStripe.style.background  = ch.color;
+  popupSpec.textContent         = ch.specialty;
+  popupSpec.style.color         = ch.color;
+  popupTown.textContent         = ch.town;
+  popup.style.left = x + 'px';
+  popup.style.top  = y + 'px';
+  popup.classList.add('visible');
+}
+
+function scheduleHide() {
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => popup.classList.remove('visible'), 250);
+}
+
+document.addEventListener('mousemove', e => {
+  if (popup.classList.contains('visible')) {
+    popup.style.left = e.clientX + 'px';
+    popup.style.top  = (e.clientY - 6) + 'px';
+  }
+});
+
+// ── MARQUEURS ──
+const allMarkers = [];
+
+chantiers.forEach(ch => {
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="marker-wrap">
+      <div class="marker-pulse" style="border-color:${ch.color}"></div>
+      <div class="marker-pin" style="background:${ch.color}">
+        <span class="pin-icon">${ch.icon}</span>
+      </div>
+      <div class="marker-shadow"></div>
+    </div>`,
+    iconSize: [34, 44],
+    iconAnchor: [17, 44],
+  });
+
+  const m = L.marker([ch.lat, ch.lng], { icon }).addTo(map);
+
+  m.on('mouseover', e => {
+    showPopup(e.originalEvent.clientX, e.originalEvent.clientY, ch);
+    e.target.getElement().querySelector('.marker-pin').style.transform = 'rotate(-45deg) scale(1.25)';
+  });
+  m.on('mouseout', e => {
+    scheduleHide();
+    e.target.getElement().querySelector('.marker-pin').style.transform = '';
+  });
+  m.on('click', e => {
+    showPopup(e.originalEvent.clientX, e.originalEvent.clientY, ch);
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => popup.classList.remove('visible'), 3500);
+  });
+
+  m._type = ch.type;
+  allMarkers.push(m);
+});
+
+// ── FILTRE ──
+const active = new Set(['ite','joint']);
+
+function filterMarkers(type, el) {
+  if (active.size === 1 && active.has(type)) { resetFilter(); return; }
+  if (active.has(type)) { active.delete(type); el.classList.remove('active'); }
+  else                  { active.add(type);    el.classList.add('active'); }
+  applyFilter();
+}
+
+function resetFilter() {
+  active.clear();
+  ['ite','joint'].forEach(t => active.add(t));
+  document.querySelectorAll('.legend-item').forEach(el => el.classList.add('active'));
+  applyFilter();
+}
+
+function applyFilter() {
+  allMarkers.forEach(m => {
+    active.has(m._type)
+      ? (!map.hasLayer(m) && map.addLayer(m))
+      : (map.hasLayer(m) && map.removeLayer(m));
+  });
+}
+</script>
+</body>
+</html>
