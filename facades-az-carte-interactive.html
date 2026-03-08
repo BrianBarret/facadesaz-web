@@ -273,17 +273,17 @@ const chantiers = [
   { lat:44.628, lng:4.388, town:"Aubenas",               type:"ite",      color:"#5a9e1a", specialty:"Isolation extérieure", icon:"🏠", photo:"https://brianbarret.github.io/facadesaz-web/photos/ite1.jpg",      desc:"Isolation thermique par l'extérieur — polystyrène graphité, finition enduit gratté." },
   { lat:44.615, lng:4.401, town:"Aubenas",               type:"ite",      color:"#5a9e1a", specialty:"Isolation extérieure", icon:"🏠", photo:"https://brianbarret.github.io/facadesaz-web/photos/ite2.jpg",      desc:"ITE sur résidence de 6 logements — bardage minéral, performance énergétique renforcée." },
   // Enduits de façades
-  { lat:44.718, lng:4.189, town:"Montpezat-sous-Bauzon", type:"enduit",   color:"#2a7a40", specialty:"Enduits de façades",  icon:"🧱", photo:"https://brianbarret.github.io/facadesaz-web/photos/enduit1.jpg",  desc:"Ravalement complet en enduit monocouche gratté — maison de village, ton sable chaud." },
-  { lat:44.554, lng:4.601, town:"Alba-la-Romaine",       type:"enduit",   color:"#2a7a40", specialty:"Enduits de façades",  icon:"🧱", photo:"https://brianbarret.github.io/facadesaz-web/photos/enduit2.jpg",  desc:"Enduit de façade sur mas rénové — finition taloché, teinte personnalisée au nuancier." },
+  { lat:44.711, lng:4.212, town:"Montpezat-sous-Bauzon", type:"enduit",   color:"#2a7a40", specialty:"Enduits de façades",  icon:"🧱", photo:"https://brianbarret.github.io/facadesaz-web/photos/enduit1.jpg",  desc:"Ravalement complet en enduit monocouche gratté — maison de village, ton sable chaud." },
+  { lat:44.553, lng:4.600, town:"Alba-la-Romaine",       type:"enduit",   color:"#2a7a40", specialty:"Enduits de façades",  icon:"🧱", photo:"https://brianbarret.github.io/facadesaz-web/photos/enduit2.jpg",  desc:"Enduit de façade sur mas rénové — finition taloché, teinte personnalisée au nuancier." },
   // Joints de pierre
-  { lat:44.283, lng:4.295, town:"Laurac-en-Vivarais",    type:"joint",    color:"#1a5a30", specialty:"Joints de pierre",    icon:"⛏",  photo:"https://brianbarret.github.io/facadesaz-web/photos/joint1.jpg",   desc:"Rejointoiement complet façade en pierre calcaire ardéchoise — mortier traditionnel teinté pierre." },
-  { lat:44.647, lng:4.467, town:"Coux",                  type:"joint",    color:"#1a5a30", specialty:"Joints de pierre",    icon:"⛏",  photo:"https://brianbarret.github.io/facadesaz-web/photos/joint2.jpg",   desc:"Restauration joints de façade en pierres anciennes — savoir-faire patrimoine." },
+  { lat:44.509, lng:4.290, town:"Laurac-en-Vivarais",    type:"joint",    color:"#1a5a30", specialty:"Joints de pierre",    icon:"⛏",  photo:"https://brianbarret.github.io/facadesaz-web/photos/joint1.jpg",   desc:"Rejointoiement complet façade en pierre calcaire ardéchoise — mortier traditionnel teinté pierre." },
+  { lat:44.732, lng:4.618, town:"Coux",                  type:"joint",    color:"#1a5a30", specialty:"Joints de pierre",    icon:"⛏",  photo:"https://brianbarret.github.io/facadesaz-web/photos/joint2.jpg",   desc:"Restauration joints de façade en pierres anciennes — savoir-faire patrimoine." },
   // Peinture
-  { lat:44.403, lng:4.178, town:"Saint-Maurice-d'Ibie",  type:"peinture", color:"#c97d10", specialty:"Peinture",            icon:"🖌", photo:"https://brianbarret.github.io/facadesaz-web/photos/peinture1.jpg", desc:"Peinture extérieure façade et volets — maison de maître, finition satinée deux tons." },
-  { lat:44.356, lng:4.420, town:"Joyeuse",               type:"peinture", color:"#c97d10", specialty:"Peinture",            icon:"🖌", photo:"https://brianbarret.github.io/facadesaz-web/photos/peinture2.jpg", desc:"Peinture intérieure et extérieure — rénovation complète, gamme produits professionnels." },
+  { lat:44.500, lng:4.479, town:"Saint-Maurice-d'Ibie",  type:"peinture", color:"#c97d10", specialty:"Peinture",            icon:"🖌", photo:"https://brianbarret.github.io/facadesaz-web/photos/peinture1.jpg", desc:"Peinture extérieure façade et volets — maison de maître, finition satinée deux tons." },
+  { lat:44.479, lng:4.239, town:"Joyeuse",               type:"peinture", color:"#c97d10", specialty:"Peinture",            icon:"🖌", photo:"https://brianbarret.github.io/facadesaz-web/photos/peinture2.jpg", desc:"Peinture intérieure et extérieure — rénovation complète, gamme produits professionnels." },
 ];
 
-const map = L.map('map', { center:[44.55,4.40], zoom:10, zoomControl:true, scrollWheelZoom:false });
+const map = L.map('map', { center:[44.55,4.40], zoom:11, zoomControl:true, scrollWheelZoom:false });
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   subdomains:'abcd', maxZoom:18, attribution:'© CartoDB © OpenStreetMap'
 }).addTo(map);
