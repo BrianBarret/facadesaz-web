@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schéma ITE — Façades A.Z</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:     #5a9e1a;
+    --green-dk:  #3d6e10;
+    --orange:    #c97d10;
+    --gray:      #3a3a3a;
+    --gray-mid:  #666;
+    --bg:        #f4f5f2;
+    --white:     #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 32px 20px;
+  }
+
+  /* ── TITRE ── */
+  .schema-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--gray);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .schema-subtitle {
+    font-size: 13px; color: var(--gray-mid);
+    text-align: center; margin-bottom: 36px;
+    letter-spacing: 0.3px;
+  }
+  .schema-subtitle span {
+    color: var(--green); font-weight: 600;
+  }
+
+  /* ── WRAPPER SCHÉMA ── */
+  .schema-wrap {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    max-width: 760px;
+    position: relative;
+  }
+
+  /* ── COUPE MUR ── */
+  .wall-section {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    flex: 1;
+    min-height: 340px;
+  }
+
+  /* Chaque couche */
+  .layer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    opacity: 0;
+    transform: translateX(-18px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .layer.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Texte vertical dans la couche */
+  .layer-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 0 6px;
+  }
+
+  /* COUCHE 1 — Mur existant */
+  .layer-mur {
+    width: 90px;
+    background: #b0a090;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent, transparent 18px,
+        rgba(0,0,0,0.08) 18px, rgba(0,0,0,0.08) 19px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent, transparent 28px,
+        rgba(0,0,0,0.06) 28px, rgba(0,0,0,0.06) 29px
+      );
+    transition-delay: 0.1s;
+  }
+  .layer-mur .layer-label { color: rgba(255,255,255,0.85); }
+
+  /* COUCHE 2 — Isolant */
+  .layer-isolant {
+    width: 72px;
+    background: #e8f4d0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent, transparent 6px,
+      rgba(90,158,26,0.12) 6px, rgba(90,158,26,0.12) 7px
+    );
+    border-left: 2px dashed rgba(90,158,26,0.4);
+    border-right: 2px dashed rgba(90,158,26,0.4);
+    transition-delay: 0.4s;
+  }
+  .layer-isolant .layer-label { color: var(--green-dk); }
+
+  /* COUCHE 3 — Sous-enduit armé */
+  .layer-armature {
+    width: 22px;
+    background: #d4c9a8;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 8px,
+      rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 9px
+    );
+    transition-delay: 0.7s;
+  }
+  .layer-armature .layer-label { color: rgba(80,60,20,0.8); font-size: 10px; }
+
+  /* COUCHE 4 — Enduit finition */
+  .layer-enduit {
+    width: 18px;
+    background: linear-gradient(to right, #e8dfc8, #f0e8d4);
+    transition-delay: 1.0s;
+  }
+  .layer-enduit .layer-label { color: rgba(80,60,20,0.7); font-size: 10px; }
+
+  /* COUCHE 5 — Finition / extérieur */
+  .layer-ext {
+    width: 28px;
+    background: linear-gradient(135deg, #f5f0e8, #ede5d4);
+    border-right: none;
+    position: relative;
+    overflow: hidden;
+    transition-delay: 1.3s;
+  }
+  .layer-ext::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.5));
+  }
+  .layer-ext .layer-label { color: rgba(80,60,20,0.6); font-size: 10px; }
+
+  /* ── LÉGENDES À DROITE ── */
+  .legend-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 20px 0 20px 28px;
+    gap: 4px;
+    flex-shrink: 0;
+    width: 220px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    opacity: 0;
+    transform: translateX(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .legend-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .legend-arrow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .arrow-line {
+    height: 2px;
+    width: 24px;
+    background: var(--gray-mid);
+  }
+  .arrow-head {
+    width: 0; height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-right: 6px solid var(--gray-mid);
+  }
+
+  .legend-text { line-height: 1.3; }
+  .legend-text strong {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--gray);
+    display: block;
+    letter-spacing: 0.3px;
+  }
+  .legend-text span {
+    font-size: 11px; color: var(--gray-mid);
+    line-height: 1.4;
+  }
+  .legend-badge {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 3px;
+    margin-top: 3px;
+  }
+  .legend-badge.orange { background: var(--orange); }
+
+  /* ── INDICATEURS PERF ── */
+  .perf-bar {
+    width: 100%;
+    max-width: 760px;
+    margin-top: 28px;
+    display: flex;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease 1.8s, transform 0.5s ease 1.8s;
+  }
+  .perf-bar.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .perf-item {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--green);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .perf-item.orange-border { border-left-color: var(--orange); }
+  .perf-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px; font-weight: 800;
+    color: var(--green); line-height: 1;
+  }
+  .perf-item.orange-border .perf-value { color: var(--orange); }
+  .perf-label {
+    font-size: 11px; color: var(--gray-mid);
+    margin-top: 3px; line-height: 1.3;
+  }
+
+  /* ── REPLAY BUTTON ── */
+  .replay-btn {
+    margin-top: 20px;
+    background: transparent;
+    border: 1.5px solid rgba(90,158,26,0.4);
+    color: var(--green);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 7px 18px; border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    opacity: 0;
+    transition: opacity 0.4s ease 2.2s, background 0.2s, color 0.2s;
+  }
+  .replay-btn.visible { opacity: 1; }
+  .replay-btn:hover {
+    background: var(--green); color: white;
+  }
+
+  /* ── ÉTIQUETTE EXTÉRIEUR/INTÉRIEUR ── */
+  .ext-int-labels {
+    display: flex;
+    width: 100%;
+    max-width: 760px;
+    margin-bottom: 8px;
+    padding-right: 220px;
+  }
+  .ext-label, .int-label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--gray-mid);
+    flex: 1; text-align: center;
+  }
+  .ext-label { text-align: right; padding-right: 8px; }
+  .int-label { text-align: left; padding-left: 8px; }
+  .ext-int-sep {
+    width: 1px; background: rgba(0,0,0,0.15);
+    position: relative;
+  }
+</style>
+</head>
+<body>
+
+<div class="schema-title">Isolation Thermique par l'Extérieur</div>
+<div class="schema-subtitle">Composition d'une paroi ITE — <span>système certifié RGE Qualibat</span></div>
+
+<!-- Labels ext/int -->
+<div class="ext-int-labels">
+  <div class="int-label">← Intérieur</div>
+  <div class="ext-label">Extérieur →</div>
+</div>
+
+<!-- SCHÉMA -->
+<div class="schema-wrap">
+  <div class="wall-section">
+
+    <!-- Couche 1 : Mur existant -->
+    <div class="layer layer-mur" id="l1">
+      <span class="layer-label">Mur existant</span>
+    </div>
+
+    <!-- Couche 2 : Isolant -->
+    <div class="layer layer-isolant" id="l2">
+      <span class="layer-label">Isolant</span>
+    </div>
+
+    <!-- Couche 3 : Sous-enduit armé -->
+    <div class="layer layer-armature" id="l3">
+      <span class="layer-label">Armature</span>
+    </div>
+
+    <!-- Couche 4 : Enduit -->
+    <div class="layer layer-enduit" id="l4">
+      <span class="layer-label">Enduit</span>
+    </div>
+
+    <!-- Couche 5 : Finition extérieure -->
+    <div class="layer layer-ext" id="l5">
+      <span class="layer-label">Finition</span>
+    </div>
+
+  </div>
+
+  <!-- LÉGENDES -->
+  <div class="legend-side">
+
+    <div class="legend-item" id="leg1">
+      <div class="legend-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="legend-text">
+        <strong>Mur existant</strong>
+        <span>Parpaing, brique ou pierre — conservé en l'état</span>
+      </div>
+    </div>
+
+    <div class="legend-item" id="leg2">
+      <div class="legend-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="legend-text">
+        <strong>Isolant thermique</strong>
+        <span>Polystyrène graphité ou laine de roche — 100 à 200mm</span>
+        <span class="legend-badge">RGE éligible</span>
+      </div>
+    </div>
+
+    <div class="legend-item" id="leg3">
+      <div class="legend-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="legend-text">
+        <strong>Sous-enduit armé</strong>
+        <span>Treillis fibre de verre — résistance mécanique</span>
+      </div>
+    </div>
+
+    <div class="legend-item" id="leg4">
+      <div class="legend-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="legend-text">
+        <strong>Enduit de corps</strong>
+        <span>Couche de liaison — imperméabilité</span>
+      </div>
+    </div>
+
+    <div class="legend-item" id="leg5">
+      <div class="legend-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="legend-text">
+        <strong>Finition extérieure</strong>
+        <span>Enduit gratté, taloché ou projeté — choix coloris</span>
+        <span class="legend-badge orange">Esthétique au choix</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PERF -->
+<div class="perf-bar" id="perfBar">
+  <div class="perf-item">
+    <div class="perf-value">−30%</div>
+    <div class="perf-label">de déperditions thermiques en moyenne</div>
+  </div>
+  <div class="perf-item">
+    <div class="perf-value">+15°</div>
+    <div class="perf-label">de confort thermique en hiver</div>
+  </div>
+  <div class="perf-item orange-border">
+    <div class="perf-value">MaPrime</div>
+    <div class="perf-label">Rénov' — aide de l'État disponible</div>
+  </div>
+  <div class="perf-item orange-border">
+    <div class="perf-value">CEE</div>
+    <div class="perf-label">Certificats d'économie d'énergie cumulables</div>
+  </div>
+</div>
+
+<button class="replay-btn" id="replayBtn" onclick="replay()">↺ Revoir l'animation</button>
+
+<script>
+  const layers  = ['l1','l2','l3','l4','l5'];
+  const legends = ['leg1','leg2','leg3','leg4','leg5'];
+  const delays  = [100, 400, 700, 1000, 1300];
+
+  function animate() {
+    layers.forEach((id, i) => {
+      setTimeout(() => {
+        document.getElementById(id).classList.add('visible');
+        document.getElementById(legends[i]).classList.add('visible');
+      }, delays[i]);
+    });
+    setTimeout(() => {
+      document.getElementById('perfBar').classList.add('visible');
+      document.getElementById('replayBtn').classList.add('visible');
+    }, 1800);
+  }
+
+  function replay() {
+    // Reset
+    layers.forEach(id => document.getElementById(id).classList.remove('visible'));
+    legends.forEach(id => document.getElementById(id).classList.remove('visible'));
+    document.getElementById('perfBar').classList.remove('visible');
+    document.getElementById('replayBtn').classList.remove('visible');
+    setTimeout(animate, 200);
+  }
+
+  // Lancement automatique
+  window.addEventListener('load', () => setTimeout(animate, 400));
+</script>
+
+</body>
+</html>
