@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enduits — Sélecteur de finitions</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:      #5a9e1a;
+    --green-dark: #3d6e10;
+    --amber:      #c97d10;
+    --gray-dark:  #3a3a3a;
+    --off-white:  #f4f5f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--off-white);
+    color: var(--gray-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px 32px;
+  }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 3px;
+    color: var(--green);
+    border: 1px solid rgba(90,158,26,0.35);
+    padding: 4px 14px; border-radius: 2px;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+  h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 38px; font-weight: 800;
+    letter-spacing: 1px; line-height: 1.05;
+    color: var(--gray-dark);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  h2 em { color: var(--green); font-style: normal; }
+  .subtitle {
+    font-size: 15px; color: #888; margin-bottom: 40px;
+    text-align: center; line-height: 1.5;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .tab {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 10px 24px;
+    border-radius: 4px;
+    border: 2px solid #ddd;
+    background: white;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+    user-select: none;
+  }
+  .tab:hover {
+    border-color: var(--green);
+    color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(90,158,26,0.15);
+  }
+  .tab.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+    box-shadow: 0 4px 16px rgba(90,158,26,0.3);
+  }
+
+  /* ── VISUALISEUR ── */
+  .viewer {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.16);
+    min-height: 340px;
+  }
+
+  /* Panneau gauche — texture */
+  .texture-panel {
+    position: relative;
+    overflow: hidden;
+    min-height: 340px;
+  }
+  canvas#texCanvas {
+    width: 100%; height: 100%;
+    display: block;
+    transition: opacity 0.15s;
+  }
+
+  /* Badge finition */
+  .texture-badge {
+    position: absolute;
+    top: 18px; left: 18px;
+    background: rgba(255,255,255,0.92);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 6px 14px;
+    border-radius: 3px;
+    color: var(--gray-dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: opacity 0.3s;
+  }
+  .texture-badge .dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* Label zoom */
+  .zoom-hint {
+    position: absolute;
+    bottom: 14px; right: 14px;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    background: rgba(0,0,0,0.35);
+    padding: 4px 10px; border-radius: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Panneau droit — infos */
+  .info-panel {
+    background: var(--gray-dark);
+    color: white;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .info-panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.02) 19px, rgba(255,255,255,0.02) 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255,255,255,0.02) 19px, rgba(255,255,255,0.02) 20px);
+    pointer-events: none;
+  }
+  .info-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--green);
+    margin-bottom: 10px;
+    position: relative; z-index: 1;
+  }
+  .info-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px; font-weight: 800;
+    letter-spacing: 0.5px;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    position: relative; z-index: 1;
+    transition: opacity 0.2s;
+  }
+  .info-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+    margin-bottom: 24px;
+    position: relative; z-index: 1;
+    transition: opacity 0.2s;
+  }
+
+  /* Caractéristiques */
+  .chars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative; z-index: 1;
+  }
+  .char-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .char-label {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    width: 90px; flex-shrink: 0;
+  }
+  .char-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .char-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    width: 0;
+    transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+  .char-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    width: 28px; text-align: right;
+  }
+
+  /* Usages */
+  .usages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 20px;
+    position: relative; z-index: 1;
+  }
+  .usage-tag {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(90,158,26,0.2);
+    color: #8dce45;
+    border: 1px solid rgba(90,158,26,0.3);
+  }
+
+  /* ── Transitions ── */
+  .fade-out { opacity: 0 !important; }
+  .fade-in  { opacity: 1 !important; }
+
+  @media (max-width: 640px) {
+    .viewer { grid-template-columns: 1fr; }
+    .texture-panel { min-height: 200px; }
+    .info-panel { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="section-label">Nos finitions</div>
+<h2>Nos types de <em>finitions</em></h2>
+<p class="subtitle">Sélectionnez un type d'enduit pour voir le rendu et les caractéristiques</p>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" data-id="0">🧱 Monocouche gratté</div>
+  <div class="tab" data-id="1">〰️ Monocouche taloché</div>
+  <div class="tab" data-id="2">💧 Projeté</div>
+  <div class="tab" data-id="3">🪨 Sur pierre</div>
+</div>
+
+<!-- VIEWER -->
+<div class="viewer">
+  <div class="texture-panel">
+    <canvas id="texCanvas"></canvas>
+    <div class="texture-badge" id="texBadge"><span class="dot"></span><span id="badgeText">Gratté</span></div>
+    <div class="zoom-hint">Aperçu texture</div>
+  </div>
+  <div class="info-panel">
+    <div class="info-tag" id="infoTag">FINITION</div>
+    <div class="info-title" id="infoTitle">Monocouche gratté</div>
+    <div class="info-desc" id="infoDesc">Texture régulière et grattée, obtenue par passage d'un outil spécifique sur l'enduit semi-frais. Résultat classique et intemporel, parfait pour les maisons contemporaines ou les rénovations standardisées.</div>
+    <div class="chars" id="chars"></div>
+    <div class="usages" id="usages"></div>
+  </div>
+</div>
+
+<script>
+const finitions = [
+  {
+    id: 0,
+    name: "Monocouche gratté",
+    tag: "FINITION CLASSIQUE",
+    badge: "Gratté",
+    desc: "Texture régulière et grattée, obtenue par passage d'un outil spécifique sur l'enduit semi-frais. Résultat classique et intemporel, parfait pour les maisons contemporaines ou les rénovations standardisées.",
+    chars: [
+      { label: "Durabilité",  val: 85 },
+      { label: "Résistance",  val: 80 },
+      { label: "Esthétique",  val: 70 },
+      { label: "Prix",        val: 55 },
+    ],
+    usages: ["Maison individuelle","Rénovation","Neuf","Toutes expositions"],
+    drawFn: drawGratte,
+    colors: ['#d4c8b8','#c8bba8','#ddd0bc','#c4b8a8'],
+  },
+  {
+    id: 1,
+    name: "Monocouche taloché",
+    tag: "FINITION LISSE",
+    badge: "Taloché",
+    desc: "Surface semi-lisse à lisse, obtenue par talochage circulaire de l'enduit frais. Rendu propre et moderne, adapté aux architectures épurées. Facile d'entretien, très résistant aux intempéries.",
+    chars: [
+      { label: "Durabilité",  val: 90 },
+      { label: "Résistance",  val: 85 },
+      { label: "Esthétique",  val: 80 },
+      { label: "Prix",        val: 60 },
+    ],
+    usages: ["Architecture contemporaine","Neuf","Copropriétés","Façades planes"],
+    drawFn: drawTaloche,
+    colors: ['#e0d8cc','#d4ccc0','#e8e0d4','#dcd4c8'],
+  },
+  {
+    id: 2,
+    name: "Enduit projeté",
+    tag: "APPLICATION MÉCANIQUE",
+    badge: "Projeté",
+    desc: "Appliqué mécaniquement à la machine à projeter, cet enduit offre une texture rustique et généreuse. Idéal pour les grandes surfaces, il garantit un rendu homogène et une mise en œuvre rapide.",
+    chars: [
+      { label: "Durabilité",  val: 88 },
+      { label: "Résistance",  val: 92 },
+      { label: "Esthétique",  val: 65 },
+      { label: "Prix",        val: 45 },
+    ],
+    usages: ["Grandes surfaces","Immeubles","Efficacité","Rustique"],
+    drawFn: drawProjete,
+    colors: ['#bfb5a5','#b8ae9e','#c8be8e','#b0a898'],
+  },
+  {
+    id: 3,
+    name: "Enduit sur pierre",
+    tag: "BÂTI ANCIEN",
+    badge: "Sur pierre",
+    desc: "Formulation spécifique pour murs en pierres naturelles ardéchoises. Enduit à la chaux ou bâtard, respirant et compatible avec le bâti ancien. Préserve l'aspect naturel tout en protégeant durablement.",
+    chars: [
+      { label: "Durabilité",  val: 75 },
+      { label: "Résistance",  val: 70 },
+      { label: "Esthétique",  val: 95 },
+      { label: "Prix",        val: 40 },
+    ],
+    usages: ["Maisons en pierre","Patrimoine","Chaux naturelle","Ardèche"],
+    drawFn: drawPierre,
+    colors: ['#c8baa0','#b8aa90','#d4c8a8','#bfb098'],
+  },
+];
+
+// ── Fonctions de dessin ──
+function drawGratte(ctx, W, H) {
+  // Fond
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0, '#d8ccbc'); g.addColorStop(1, '#c4b8a8');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // Striures horizontales régulières (effet gratté)
+  ctx.save();
+  for (let y = 0; y < H; y += 2.5) {
+    const noise = Math.sin(y*0.8)*2;
+    ctx.strokeStyle = `rgba(0,0,0,${0.03 + Math.random()*0.04})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, y+noise);
+    for (let x = 0; x < W; x += 8) {
+      ctx.lineTo(x, y + noise + Math.sin(x*0.4)*1.5 + (Math.random()-0.5)*1);
+    }
+    ctx.stroke();
+  }
+  // Grains
+  for (let i = 0; i < 1800; i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    ctx.fillStyle = Math.random()>0.5 ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    ctx.fillRect(x, y, 1.5, 1);
+  }
+  ctx.restore();
+}
+
+function drawTaloche(ctx, W, H) {
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0, '#e4dcd0'); g.addColorStop(1, '#d4ccbf');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // Texture circulaire talochée
+  ctx.save();
+  for (let i = 0; i < 900; i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    const r = Math.random()*8+4;
+    const a = Math.random()*Math.PI*2;
+    ctx.beginPath();
+    ctx.arc(x, y, r, a, a+0.8);
+    ctx.strokeStyle = `rgba(${Math.random()>0.5?'255,255,255':'0,0,0'},${0.04+Math.random()*0.04})`;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+  // Légère granulométrie fine
+  for (let i = 0; i < 1200; i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    ctx.fillStyle = `rgba(0,0,0,${Math.random()*0.05})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+  ctx.restore();
+}
+
+function drawProjete(ctx, W, H) {
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#c8bfaf'); g.addColorStop(1,'#b8b0a0');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // Grosses projections irrégulières
+  ctx.save();
+  for (let i = 0; i < 1400; i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    const r = Math.random()*4+0.5;
+    const lum = Math.random();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fillStyle = lum > 0.6
+      ? `rgba(255,255,255,${0.1+Math.random()*0.15})`
+      : `rgba(0,0,0,${0.05+Math.random()*0.1})`;
+    ctx.fill();
+  }
+  // Reliefs marqués
+  for (let i = 0; i < 200; i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    const r = Math.random()*6+2;
+    const gp = ctx.createRadialGradient(x-r*0.3,y-r*0.3,0,x,y,r);
+    gp.addColorStop(0,'rgba(255,255,255,0.18)');
+    gp.addColorStop(1,'rgba(0,0,0,0.12)');
+    ctx.fillStyle = gp;
+    ctx.beginPath();
+    ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawPierre(ctx, W, H) {
+  // Fond pierre
+  ctx.fillStyle = '#b8a888'; ctx.fillRect(0,0,W,H);
+
+  // Blocs de pierre irréguliers
+  ctx.save();
+  const rows = [0, 0.18, 0.35, 0.52, 0.68, 0.84, 1.0];
+  rows.forEach((ry, ri) => {
+    if (ri === rows.length-1) return;
+    const y1 = ry*H, y2 = rows[ri+1]*H;
+    const offset = ri % 2 === 0 ? 0 : 0.12;
+    const colW = 0.22 + Math.random()*0.06;
+    for (let cx = -offset; cx < 1.1; cx += colW + Math.random()*0.04) {
+      const x1 = cx*W, x2 = (cx+colW)*W;
+      const jitter = (Math.random()-0.5)*8;
+
+      // Pierre
+      const gstone = ctx.createLinearGradient(x1,y1,x2,y2);
+      const base = [180+Math.random()*30, 165+Math.random()*25, 130+Math.random()*25];
+      gstone.addColorStop(0, `rgb(${base[0]+15},${base[1]+12},${base[2]+10})`);
+      gstone.addColorStop(1, `rgb(${base[0]-15},${base[1]-12},${base[2]-10})`);
+      ctx.fillStyle = gstone;
+      ctx.fillRect(x1+2, y1+2+jitter, x2-x1-4, y2-y1-4);
+
+      // Joint (chaux)
+      ctx.fillStyle = '#c8c0a8';
+      ctx.fillRect(x1, y1, x2-x1, 5);
+      ctx.fillRect(x1, y1, 5, y2-y1);
+    }
+    ctx.fillStyle = '#c8c0a8';
+    ctx.fillRect(0, y2-3, W, 6);
+  });
+
+  // Texture vieille pierre
+  for (let i = 0; i < 600; i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    ctx.fillStyle = `rgba(0,0,0,${Math.random()*0.08})`;
+    ctx.fillRect(x, y, Math.random()*3+1, 1);
+  }
+  ctx.restore();
+}
+
+// ── Rendu ──
+const canvas = document.getElementById('texCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const panel = canvas.parentElement;
+  canvas.width  = panel.offsetWidth;
+  canvas.height = panel.offsetHeight;
+  drawCurrent();
+}
+
+let current = 0;
+
+function drawCurrent() {
+  finitions[current].drawFn(ctx, canvas.width, canvas.height);
+}
+
+// ── UI ──
+function updateInfo(id, animate) {
+  const f = finitions[id];
+  const title = document.getElementById('infoTitle');
+  const desc  = document.getElementById('infoDesc');
+  const tag   = document.getElementById('infoTag');
+  const chars = document.getElementById('chars');
+  const usages = document.getElementById('usages');
+  const badge = document.getElementById('badgeText');
+
+  if (animate) {
+    [title, desc].forEach(el => el.classList.add('fade-out'));
+    setTimeout(() => {
+      tag.textContent   = f.tag;
+      title.textContent = f.name;
+      desc.textContent  = f.desc;
+      badge.textContent = f.badge;
+      [title, desc].forEach(el => el.classList.remove('fade-out'));
+    }, 160);
+  } else {
+    tag.textContent   = f.tag;
+    title.textContent = f.name;
+    desc.textContent  = f.desc;
+    badge.textContent = f.badge;
+  }
+
+  // Barres de caractéristiques
+  chars.innerHTML = f.chars.map(c => `
+    <div class="char-row">
+      <div class="char-label">${c.label}</div>
+      <div class="char-bar-wrap"><div class="char-bar" data-val="${c.val}"></div></div>
+      <div class="char-val">${c.val}%</div>
+    </div>
+  `).join('');
+
+  setTimeout(() => {
+    chars.querySelectorAll('.char-bar').forEach(bar => {
+      bar.style.width = bar.dataset.val + '%';
+    });
+  }, animate ? 200 : 50);
+
+  // Tags usage
+  usages.innerHTML = f.usages.map(u => `<span class="usage-tag">${u}</span>`).join('');
+}
+
+// ── Transitions texture ──
+function switchTo(id) {
+  if (id === current) return;
+
+  canvas.style.opacity = '0.3';
+  canvas.style.transition = 'opacity 0.15s';
+
+  setTimeout(() => {
+    current = id;
+    resizeCanvas();
+    canvas.style.opacity = '1';
+  }, 150);
+
+  updateInfo(id, true);
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-id="${id}"]`).classList.add('active');
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => switchTo(parseInt(tab.dataset.id)));
+});
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+updateInfo(0, false);
+</script>
+</body>
+</html>
