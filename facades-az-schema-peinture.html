@@ -6,496 +6,494 @@
 <title>Peinture façade — Nuancier Weber</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green:      #5a9e1a;
-    --green-dark: #3d6e10;
-    --amber:      #c97d10;
-    --gray-dark:  #3a3a3a;
-    --off-white:  #f4f5f2;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Barlow', sans-serif;
-    background: var(--off-white);
-    color: var(--gray-dark);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 100vh; padding: 24px 16px 32px;
-  }
-  .section-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 3px;
-    color: var(--green); border: 1px solid rgba(90,158,26,0.35);
-    padding: 4px 14px; border-radius: 2px;
-    margin-bottom: 12px; display: inline-block;
-  }
-  h2 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 36px; font-weight: 800; letter-spacing: 1px;
-    color: var(--gray-dark); margin-bottom: 6px; text-align: center;
-  }
-  h2 em { color: var(--green); font-style: normal; }
-  .subtitle { font-size: 14px; color: #888; margin-bottom: 28px; text-align: center; }
-
-  .house-wrap {
-    width: 100%; max-width: 860px; position: relative;
-    border-radius: 12px; overflow: hidden;
-    box-shadow: 0 16px 60px rgba(0,0,0,0.2); background: #1a2a3a;
-  }
-  canvas#houseCanvas { display: block; width: 100%; height: auto; }
-
-  .color-badge {
-    position: absolute; top: 16px; right: 16px;
-    background: rgba(20,16,12,0.9); border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 6px; padding: 10px 16px;
-    display: flex; align-items: center; gap: 12px;
-    backdrop-filter: blur(6px);
-  }
-  .badge-swatch {
-    width: 32px; height: 32px; border-radius: 4px;
-    border: 1.5px solid rgba(255,255,255,0.25);
-    transition: background 0.4s; flex-shrink: 0;
-  }
-  .badge-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px; font-weight: 800;
-    color: white; letter-spacing: 0.5px; line-height: 1.1;
-  }
-  .badge-ref { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
-
-  .hint {
-    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
-    font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5);
-    background: rgba(0,0,0,0.32); padding: 4px 12px; border-radius: 10px;
-    white-space: nowrap; transition: opacity 0.6s; pointer-events: none;
-  }
-
-  /* ── ÉVENTAIL ── */
-  .fan-section { width: 100%; max-width: 860px; margin-top: 22px; }
-  .fan-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .fan-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 2px; color: #999;
-  }
-  .fan-logo {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px; font-weight: 700; color: #bbb; letter-spacing: 1px;
-    border: 1px solid #ddd; padding: 3px 10px; border-radius: 3px;
-  }
-  .fan-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-  .fan-card {
-    flex: 0 0 auto; width: 64px;
-    border-radius: 4px 4px 3px 3px; overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.18s, box-shadow 0.18s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.14);
-    border: 2px solid transparent; background: white;
-  }
-  .fan-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.28); z-index: 2;
-  }
-  .fan-card.active {
-    border-color: #333;
-    transform: translateY(-7px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.38); z-index: 3;
-  }
-  .fan-color { height: 56px; width: 100%; }
-  .fan-info { padding: 4px 5px 5px; background: white; }
-  .fan-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 9.5px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.2px; color: #444; line-height: 1.2;
-  }
-  .fan-code { font-size: 8.5px; color: #aaa; }
+  :root{--green:#5a9e1a;--green-dark:#3d6e10;--amber:#c97d10;--gray-dark:#3a3a3a;--off-white:#f4f5f2}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Barlow',sans-serif;background:var(--off-white);color:var(--gray-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 16px 32px}
+  .lbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--green);border:1px solid rgba(90,158,26,.35);padding:4px 14px;border-radius:2px;margin-bottom:12px;display:inline-block}
+  h2{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;letter-spacing:1px;color:var(--gray-dark);margin-bottom:6px;text-align:center}
+  h2 em{color:var(--green);font-style:normal}
+  .sub{font-size:14px;color:#888;margin-bottom:28px;text-align:center}
+  .hw{width:100%;max-width:880px;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.28),0 2px 8px rgba(0,0,0,.15)}
+  canvas{display:block;width:100%;height:auto}
+  .badge{position:absolute;top:18px;right:18px;background:rgba(18,14,10,.92);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:11px 18px;display:flex;align-items:center;gap:13px;backdrop-filter:blur(8px)}
+  .bsw{width:34px;height:34px;border-radius:5px;border:1.5px solid rgba(255,255,255,.22);transition:background .5s;flex-shrink:0}
+  .bnm{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:white;letter-spacing:.5px;line-height:1.1}
+  .brf{font-size:11px;color:rgba(255,255,255,.38);margin-top:2px}
+  .hint{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:rgba(255,255,255,.48);background:rgba(0,0,0,.32);padding:4px 13px;border-radius:10px;white-space:nowrap;transition:opacity .6s;pointer-events:none}
+  .fs{width:100%;max-width:880px;margin-top:22px}
+  .fh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+  .ft{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#999}
+  .fl{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#bbb;letter-spacing:1px;border:1px solid #ddd;padding:3px 10px;border-radius:3px}
+  .fg{display:flex;flex-wrap:wrap;gap:6px}
+  .fc{flex:0 0 auto;width:64px;border-radius:5px 5px 3px 3px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s;box-shadow:0 2px 7px rgba(0,0,0,.14);border:2px solid transparent;background:white}
+  .fc:hover{transform:translateY(-5px);box-shadow:0 9px 24px rgba(0,0,0,.26);z-index:2}
+  .fc.active{border-color:#333;transform:translateY(-7px);box-shadow:0 12px 30px rgba(0,0,0,.36);z-index:3}
+  .fcol{height:56px;width:100%}
+  .fi{padding:4px 5px 5px;background:white}
+  .fn{font-family:'Barlow Condensed',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.2px;color:#444;line-height:1.2}
+  .fcd{font-size:8.5px;color:#aaa}
 </style>
 </head>
 <body>
-
-<div class="section-label">Gamme Weber</div>
+<div class="lbl">Gamme Weber</div>
 <h2>Visualisez votre <em>façade</em></h2>
-<p class="subtitle">Cliquez sur une teinte pour visualiser le rendu en temps réel</p>
-
-<div class="house-wrap">
-  <canvas id="houseCanvas" width="860" height="440"></canvas>
-  <div class="color-badge">
-    <div class="badge-swatch" id="badgeSwatch"></div>
-    <div>
-      <div class="badge-name" id="badgeName">—</div>
-      <div class="badge-ref"  id="badgeRef">weber.col®</div>
-    </div>
-  </div>
+<p class="sub">Cliquez sur une teinte pour visualiser le rendu en temps réel</p>
+<div class="hw">
+  <canvas id="hc" width="880" height="496"></canvas>
+  <div class="badge"><div class="bsw" id="bs"></div><div><div class="bnm" id="bn">—</div><div class="brf" id="br">weber.col®</div></div></div>
   <div class="hint" id="hint">👇 Choisissez une teinte ci-dessous</div>
 </div>
-
-<div class="fan-section">
-  <div class="fan-header">
-    <div class="fan-title">Nuancier façade — 24 teintes</div>
-    <div class="fan-logo">weber.col®</div>
-  </div>
-  <div class="fan-grid" id="fanGrid"></div>
+<div class="fs">
+  <div class="fh"><div class="ft">Nuancier façade — 24 teintes</div><div class="fl">weber.col®</div></div>
+  <div class="fg" id="fg"></div>
 </div>
-
 <script>
-// ─── PALETTE WEBER ───
-const PALETTE = [
-  {name:'Blanc Neige',    code:'W001', hex:'#F4F0E8'},
-  {name:'Craie',          code:'W010', hex:'#EDE5D5'},
-  {name:'Ivoire',         code:'W020', hex:'#E8DECA'},
-  {name:'Lin',            code:'W030', hex:'#DCCFB0'},
-  {name:'Sable Fin',      code:'S001', hex:'#D2C09C'},
-  {name:'Grès Clair',     code:'S010', hex:'#C6B088'},
-  {name:'Pierre Blonde',  code:'S020', hex:'#C0A472'},
-  {name:'Miel',           code:'S030', hex:'#BA9858'},
-  {name:'Ocre Pâle',      code:'O001', hex:'#C8A455'},
-  {name:'Ocre Doré',      code:'O010', hex:'#B48C3C'},
-  {name:'Terre Dorée',    code:'O020', hex:'#A87030'},
-  {name:'Terre Cuite',    code:'O030', hex:'#A26240'},
-  {name:'Brique Douce',   code:'R001', hex:'#B46858'},
-  {name:'Saumon',         code:'R010', hex:'#C08070'},
-  {name:'Rose Ancien',    code:'R020', hex:'#BC9485'},
-  {name:'Argile',         code:'R030', hex:'#986858'},
-  {name:'Calcaire',       code:'G001', hex:'#C6BCA4'},
-  {name:'Pierre Grise',   code:'G010', hex:'#ACA494'},
-  {name:'Silex',          code:'G020', hex:'#949090'},
-  {name:'Ardoise',        code:'G030', hex:'#7C8484'},
-  {name:'Sauge',          code:'V001', hex:'#8C946E'},
-  {name:'Vert Cèdre',     code:'V010', hex:'#728468'},
-  {name:'Gris Anthracite',code:'F001', hex:'#606262'},
-  {name:'Charbon',        code:'F010', hex:'#4C5050'},
+const PAL=[
+  {n:'Blanc Neige',c:'W001',h:'#F4F0E8'},{n:'Craie',c:'W010',h:'#EDE5D5'},
+  {n:'Ivoire',c:'W020',h:'#E8DECA'},{n:'Lin',c:'W030',h:'#DDD0B2'},
+  {n:'Sable Fin',c:'S001',h:'#D4C19E'},{n:'Grès Clair',c:'S010',h:'#C8B18A'},
+  {n:'Pierre Blonde',c:'S020',h:'#C2A572'},{n:'Miel',c:'S030',h:'#BA9856'},
+  {n:'Ocre Pâle',c:'O001',h:'#C8A450'},{n:'Ocre Doré',c:'O010',h:'#B48C38'},
+  {n:'Terre Dorée',c:'O020',h:'#A8702C'},{n:'Terre Cuite',c:'O030',h:'#A0623C'},
+  {n:'Brique Douce',c:'R001',h:'#B46858'},{n:'Saumon',c:'R010',h:'#C0807A'},
+  {n:'Rose Ancien',c:'R020',h:'#BC9486'},{n:'Argile',c:'R030',h:'#98685A'},
+  {n:'Calcaire',c:'G001',h:'#C8BCAA'},{n:'Pierre Grise',c:'G010',h:'#ACA496'},
+  {n:'Silex',c:'G020',h:'#969090'},{n:'Ardoise',c:'G030',h:'#7C8486'},
+  {n:'Sauge',c:'V001',h:'#8C9470'},{n:'Vert Cèdre',c:'V010',h:'#72846A'},
+  {n:'Gris Anthracite',c:'F001',h:'#606464'},{n:'Charbon',c:'F010',h:'#4C5052'},
 ];
 
-const canvas = document.getElementById('houseCanvas');
-const ctx    = canvas.getContext('2d');
-const CW = 860, CH = 440;
+const CV=document.getElementById('hc'), X=CV.getContext('2d'), W=880, H=496;
+const HX=58,HY=82,HW=616,HH=336, WX=HX+HW,WY=120,WW=148,WH=HH-36, GY=HY+HH;
 
-// ─── UTILITAIRES COULEUR ───
-function hexRgb(hex) {
-  const h = hex.replace('#','');
-  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
-}
-function lerpColor(h1, h2, t) {
-  const [r1,g1,b1] = hexRgb(h1), [r2,g2,b2] = hexRgb(h2);
-  return `#${[r1+(r2-r1)*t, g1+(g2-g1)*t, b1+(b2-b1)*t].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}`;
-}
-function shiftL(hex, d) {
-  const [r,g,b] = hexRgb(hex);
-  return `rgb(${Math.min(r+d,255)},${Math.min(g+d,255)},${Math.min(b+d,255)})`;
-}
+function hr(h){h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rh(r,g,b){return'#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('')}
+function lh(a,b,t){const[r1,g1,b1]=hr(a),[r2,g2,b2]=hr(b);return rh(r1+(r2-r1)*t,g1+(g2-g1)*t,b1+(b2-b1)*t)}
+function li(h,d){const[r,g,b]=hr(h);return rh(r+d,g+d,b+d)}
+function dk(h,d){const[r,g,b]=hr(h);return rh(r-d,g-d,b-d)}
+function rng(s){let v=s>>>0;return()=>{v=(Math.imul(v,747796405)+2891336453)>>>0;return v/4294967296}}
 
-// ─── DESSIN MAISON ───
-function draw(col) {
-  ctx.clearRect(0,0,CW,CH);
-  drawSky();
-  drawGround();
-  drawHouse(col);
-  drawVegetation();
-  drawPath();
+// ── DRAW ──
+function draw(col){
+  X.clearRect(0,0,W,H);
+  sky(); hills(); ground(); shadowsGround(col);
+  wingBody(col); mainBody(col);
+  roofMain(); roofWing(); chimney();
+  foundation(HX,GY,HW+WW);
+  windows(col); door();
+  vegetation(); groundDetail(); atmosphere();
 }
 
-function drawSky() {
-  const g = ctx.createLinearGradient(0,0,0,CH*0.44);
-  g.addColorStop(0,'#5a8fc8'); g.addColorStop(0.65,'#9ac0de'); g.addColorStop(1,'#c0daf0');
-  ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH*0.44);
-  // Nuages
-  [
-    [100,50,1.0],[340,32,0.65],[580,48,0.8],[730,28,0.5]
-  ].forEach(([x,y,s]) => cloud(x,y,s));
+function sky(){
+  const g=X.createLinearGradient(0,0,0,H*.46);
+  g.addColorStop(0,'#4878b8');g.addColorStop(.5,'#80aed6');g.addColorStop(.85,'#b6d2ec');g.addColorStop(1,'#c8dff0');
+  X.fillStyle=g;X.fillRect(0,0,W,H*.46);
+  const sg=X.createRadialGradient(W*.76,65,0,W*.76,65,130);
+  sg.addColorStop(0,'rgba(255,248,200,.4)');sg.addColorStop(1,'rgba(255,248,200,0)');
+  X.fillStyle=sg;X.fillRect(0,0,W,H*.46);
+  cloud(72,48,90,1.0);cloud(330,30,64,.72);cloud(600,44,76,.62);cloud(768,26,52,.46);
 }
 
-function cloud(x,y,s) {
-  ctx.save(); ctx.globalAlpha = 0.55*s; ctx.fillStyle = '#fff';
-  [[0,0,20],[22,-7,26],[46,0,20],[68,5,16]].forEach(([dx,dy,r]) => {
-    ctx.beginPath(); ctx.arc(x+dx,y+dy,r*s,0,Math.PI*2); ctx.fill();
-  });
-  ctx.restore();
+function cloud(cx,cy,sz,op){
+  X.save();X.globalAlpha=op;
+  X.fillStyle='rgba(190,210,232,.55)';
+  [[0,5,sz*.5],[sz*.38,-2,sz*.56],[sz*.76,3,sz*.44]].forEach(([dx,dy,r])=>{X.beginPath();X.arc(cx+dx,cy+dy,r,0,Math.PI*2);X.fill()});
+  X.fillStyle='rgba(255,255,255,.94)';
+  [[0,0,sz*.43],[sz*.3,-9,sz*.5],[sz*.64,0,sz*.38],[sz*.93,4,sz*.3]].forEach(([dx,dy,r])=>{X.beginPath();X.arc(cx+dx,cy+dy,r,0,Math.PI*2);X.fill()});
+  X.restore();
 }
 
-function drawGround() {
-  const g = ctx.createLinearGradient(0,CH*0.82,0,CH);
-  g.addColorStop(0,'#8a9e6a'); g.addColorStop(0.4,'#7a8e58'); g.addColorStop(1,'#667844');
-  ctx.fillStyle = g; ctx.fillRect(0,CH*0.82,CW,CH*0.18);
-  ctx.save(); ctx.globalAlpha = 0.3;
-  for (let x=0;x<CW;x+=9) {
-    const h = 3+Math.sin(x*0.31)*3+Math.sin(x*0.73)*1.5;
-    ctx.fillStyle = '#4e6035';
-    ctx.fillRect(x, CH*0.82-h, 2, h);
+function hills(){
+  X.save();
+  X.globalAlpha=.28;X.fillStyle='#88b0c4';
+  X.beginPath();X.moveTo(0,H*.44);
+  for(let x=0;x<=W;x+=18){X.lineTo(x,H*.37+Math.sin(x*.008)*16+Math.sin(x*.022)*9+Math.cos(x*.005)*13)}
+  X.lineTo(W,H*.46);X.lineTo(0,H*.46);X.closePath();X.fill();
+  X.globalAlpha=.18;X.fillStyle='#9ec0a6';
+  X.beginPath();X.moveTo(0,H*.45);
+  for(let x=0;x<=W;x+=14){X.lineTo(x,H*.41+Math.sin(x*.012+1)*12+Math.sin(x*.028)*7+Math.cos(x*.007)*9)}
+  X.lineTo(W,H*.47);X.lineTo(0,H*.47);X.closePath();X.fill();
+  X.restore();
+}
+
+function ground(){
+  const g=X.createLinearGradient(0,GY,0,H);
+  g.addColorStop(0,'#7a9258');g.addColorStop(.18,'#6c8650');g.addColorStop(.55,'#5a7640');g.addColorStop(1,'#4c6632');
+  X.fillStyle=g;X.fillRect(0,GY,W,H-GY);
+}
+
+function shadowsGround(col){
+  X.save();
+  X.globalAlpha=.15;X.fillStyle='#281c0c';
+  X.beginPath();X.moveTo(HX+HW*.12,GY);X.bezierCurveTo(HX+HW*.12,GY+20,WX+WW+28,GY+20,WX+WW+28,GY);X.closePath();X.fill();
+  X.globalAlpha=.06;
+  const ag=X.createLinearGradient(0,GY-8,0,GY+4);ag.addColorStop(0,'rgba(0,0,0,0)');ag.addColorStop(1,'rgba(0,0,0,.8)');
+  X.fillStyle=ag;X.fillRect(HX,GY-8,HW+WW,12);
+  X.restore();
+}
+
+function mainBody(col){
+  X.fillStyle=col;X.fillRect(HX,HY,HW,HH);
+  const lg=X.createLinearGradient(HX,HY,HX+HW,HY+HH);
+  lg.addColorStop(0,'rgba(255,255,255,.055)');lg.addColorStop(.55,'rgba(255,255,255,0)');lg.addColorStop(1,'rgba(0,0,0,.075)');
+  X.fillStyle=lg;X.fillRect(HX,HY,HW,HH);
+  const tg=X.createLinearGradient(0,HY,0,HY+36);
+  tg.addColorStop(0,'rgba(0,0,0,.13)');tg.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=tg;X.fillRect(HX,HY,HW,36);
+  // Texture enduit
+  X.save();X.globalAlpha=.014;X.strokeStyle='#000';X.lineWidth=.7;
+  const r=rng(33);
+  for(let y=HY;y<HY+HH;y+=2.3){X.beginPath();X.moveTo(HX,y+(r()-.5)*.5);X.lineTo(HX+HW,y+(r()-.5)*.6);X.stroke()}
+  X.restore();
+  // Corniche intermédiaire
+  cornice(HX,HY+HH*.52,HW,9);
+  // Chaînages d'angle
+  chaining(HX,HY,HH,col);
+  chaining(HX+HW-14,HY,HH,col);
+}
+
+function wingBody(col){
+  const wc=dk(col,5);
+  X.fillStyle=wc;X.fillRect(WX,WY,WW,WH);
+  const lg=X.createLinearGradient(WX,WY,WX+WW,WY+WH);
+  lg.addColorStop(0,'rgba(0,0,0,.04)');lg.addColorStop(1,'rgba(0,0,0,.13)');
+  X.fillStyle=lg;X.fillRect(WX,WY,WW,WH);
+  // Ombre angle rentrant
+  const as=X.createLinearGradient(WX,WY,WX+28,WY);
+  as.addColorStop(0,'rgba(0,0,0,.2)');as.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=as;X.fillRect(WX,WY,28,WH);
+  cornice(WX,WY+WH*.52,WW,7);
+}
+
+function cornice(x,y,w,h){
+  X.fillStyle='#cecaa0';X.fillRect(x,y,w,h);
+  const g=X.createLinearGradient(0,y,0,y+h);
+  g.addColorStop(0,'rgba(255,255,255,.25)');g.addColorStop(.5,'rgba(255,255,255,.04)');g.addColorStop(1,'rgba(0,0,0,.14)');
+  X.fillStyle=g;X.fillRect(x,y,w,h);
+  const sg=X.createLinearGradient(0,y+h,0,y+h+4);
+  sg.addColorStop(0,'rgba(0,0,0,.12)');sg.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=sg;X.fillRect(x,y+h,w,4);
+}
+
+function chaining(x,y,h,col){
+  const r=rng(x|0);X.save();let cy=y;
+  while(cy<y+h){
+    const ch=13+Math.floor(r()*11);
+    const lm=r()*14-4;const[rc,gc,bc]=hr(col);
+    X.fillStyle=rh(rc+lm+9,gc+lm+6,bc+lm+3);X.fillRect(x,cy+1,14,ch-2);
+    X.strokeStyle='rgba(0,0,0,.1)';X.lineWidth=.5;X.strokeRect(x+.5,cy+1.5,13,ch-3);
+    X.fillStyle='rgba(255,255,255,.07)';X.fillRect(x+2,cy+2,10,3);
+    cy+=ch+1;
   }
-  ctx.restore();
+  X.restore();
 }
 
-function drawHouse(col) {
-  const hx=85, hy=108, hw=590, hh=328;
-
-  // ombre au sol
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';
-  ctx.beginPath(); ctx.ellipse(hx+hw/2, CH*0.83, hw*0.42, 14, 0, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // ── Façade ──
-  facade(ctx, hx, hy, hw, hh, col);
-
-  // ── Toit ──
-  roof(ctx, hx, hy, hw);
-
-  // ── Soubassement ──
-  foundation(ctx, hx, hy+hh, hw);
-
-  // ── Fenêtres + volets ──
-  window2(ctx, hx+75,  hy+68,  94, 114);
-  window2(ctx, hx+416, hy+68,  94, 114);
-  window2(ctx, hx+75,  hy+220, 80, 98);
-  window2(ctx, hx+232, hy+220, 80, 98);
-  window2(ctx, hx+426, hy+220, 80, 98);
-
-  // ── Porte ──
-  door(ctx, hx+hw/2-40, hy+hh-178, 80, 135);
-
-  // ── Corniche + séparation d'étage ──
-  ctx.fillStyle = shiftL(col,14); ctx.fillRect(hx, hy+hh-3, hw, 5);
-  ctx.fillStyle = shiftL(col,8);  ctx.fillRect(hx, hy+192, hw, 4);
+function roofMain(){
+  const ov=22,rh=116,pk=HX+HW/2;
+  // Versant G
+  const gl=X.createLinearGradient(HX-ov,HY-rh,pk,HY);
+  gl.addColorStop(0,'#c87848');gl.addColorStop(.5,'#a85e2e');gl.addColorStop(1,'#8e461e');
+  X.fillStyle=gl;X.beginPath();X.moveTo(HX-ov,HY+6);X.lineTo(pk,HY-rh);X.lineTo(pk,HY+6);X.closePath();X.fill();
+  roofTiles(HX-ov,HY+6,pk,HY-rh,'L');
+  // Versant D
+  const gr=X.createLinearGradient(pk,HY-rh,HX+HW+ov,HY);
+  gr.addColorStop(0,'#b06838');gr.addColorStop(1,'#864e22');
+  X.fillStyle=gr;X.beginPath();X.moveTo(pk,HY-rh);X.lineTo(HX+HW+ov,HY+6);X.lineTo(pk,HY+6);X.closePath();X.fill();
+  roofTiles(pk,HY-rh,HX+HW+ov,HY+6,'R');
+  genoise(HX-ov,HY+3,HW+ov*2,14);
+  // Faîtage
+  const fg=X.createRadialGradient(pk-2,HY-rh,0,pk,HY-rh+4,28);
+  fg.addColorStop(0,'#d08850');fg.addColorStop(1,'#9c5028');
+  X.fillStyle=fg;X.beginPath();X.ellipse(pk,HY-rh+4,27,12,0,0,Math.PI*2);X.fill();
+  X.fillStyle='rgba(0,0,0,.14)';X.beginPath();X.ellipse(pk+3,HY-rh+8,22,6,0,0,Math.PI*2);X.fill();
 }
 
-function facade(ctx, x, y, w, h, col) {
-  // Fond
-  ctx.fillStyle = col; ctx.fillRect(x,y,w,h);
+function roofWing(){
+  const ov=14,rh=70,pk=WX+WW/2;
+  const gl=X.createLinearGradient(WX-8,WY-rh,pk,WY);
+  gl.addColorStop(0,'#be7040');gl.addColorStop(1,'#8c4820');
+  X.fillStyle=gl;X.beginPath();X.moveTo(WX-8,WY+5);X.lineTo(pk,WY-rh);X.lineTo(pk,WY+5);X.closePath();X.fill();
+  roofTiles(WX-8,WY+5,pk,WY-rh,'L');
+  const gr=X.createLinearGradient(pk,WY-rh,WX+WW+ov,WY);
+  gr.addColorStop(0,'#a86030');gr.addColorStop(1,'#7a4020');
+  X.fillStyle=gr;X.beginPath();X.moveTo(pk,WY-rh);X.lineTo(WX+WW+ov,WY+5);X.lineTo(pk,WY+5);X.closePath();X.fill();
+  roofTiles(pk,WY-rh,WX+WW+ov,WY+5,'R');
+  genoise(WX-8,WY+3,WW+ov+8,11);
+  X.fillStyle='#b87038';X.beginPath();X.ellipse(pk,WY-rh+3,18,9,0,0,Math.PI*2);X.fill();
+}
 
-  // Dégradé lumière naturelle
-  const lg = ctx.createLinearGradient(x,y,x,y+h);
-  lg.addColorStop(0,'rgba(255,255,255,0.07)');
-  lg.addColorStop(0.5,'rgba(255,255,255,0.0)');
-  lg.addColorStop(1,'rgba(0,0,0,0.09)');
-  ctx.fillStyle=lg; ctx.fillRect(x,y,w,h);
-
-  // Dégradé latéral (ombre droite)
-  const rg = ctx.createLinearGradient(x+w-30,y,x+w,y);
-  rg.addColorStop(0,'rgba(0,0,0,0)'); rg.addColorStop(1,'rgba(0,0,0,0.11)');
-  ctx.fillStyle=rg; ctx.fillRect(x+w-30,y,30,h);
-
-  // Texture enduit (lignes très discrètes)
-  ctx.save(); ctx.globalAlpha=0.018; ctx.strokeStyle='#000'; ctx.lineWidth=0.6;
-  for (let ly=y; ly<y+h; ly+=2.6) {
-    ctx.beginPath(); ctx.moveTo(x,ly); ctx.lineTo(x+w,ly+0.4); ctx.stroke();
+function roofTiles(x1,y1,x2,y2,side){
+  X.save();
+  for(let i=1;i<18;i++){
+    const t=i/18;
+    const ly=y1+(y2-y1)*t;
+    X.strokeStyle=i%2===0?'rgba(0,0,0,.085)':'rgba(255,255,255,.055)';X.lineWidth=1.1;
+    X.beginPath();
+    if(side==='L'){X.moveTo(x1,ly);X.lineTo(x2,y2+(ly-y1)*.04)}
+    else{X.moveTo(x1,y1+(ly-y2)*.04);X.lineTo(x2,ly)}
+    X.stroke();
   }
-  ctx.restore();
+  X.restore();
 }
 
-function roof(ctx, hx, hy, hw) {
-  const ovh=20, rh=112;
-
-  // Pente gauche
-  ctx.save();
-  const gl = ctx.createLinearGradient(hx,hy-rh,hx+hw/2,hy);
-  gl.addColorStop(0,'#c27040'); gl.addColorStop(0.6,'#a06030'); gl.addColorStop(1,'#8a4020');
-  ctx.fillStyle=gl;
-  ctx.beginPath(); ctx.moveTo(hx-ovh,hy+5); ctx.lineTo(hx+hw/2,hy-rh); ctx.lineTo(hx+hw/2,hy+5); ctx.closePath(); ctx.fill();
-
-  // Pente droite
-  const gr = ctx.createLinearGradient(hx+hw/2,hy-rh,hx+hw+ovh,hy);
-  gr.addColorStop(0,'#b26838'); gr.addColorStop(1,'#8e5025');
-  ctx.fillStyle=gr;
-  ctx.beginPath(); ctx.moveTo(hx+hw/2,hy-rh); ctx.lineTo(hx+hw+ovh,hy+5); ctx.lineTo(hx+hw/2,hy+5); ctx.closePath(); ctx.fill();
-
-  // Lignes tuiles
-  ctx.globalAlpha=0.09; ctx.strokeStyle='#000'; ctx.lineWidth=1;
-  for (let tx=hx-ovh; tx<hx+hw+ovh; tx+=20) {
-    const t=(tx-(hx-ovh))/(hw+ovh*2);
-    const ty1=hy+5, ty2=hy-rh+2;
-    ctx.beginPath(); ctx.moveTo(tx,ty1); ctx.lineTo(hx+hw/2, ty2); ctx.stroke();
-  }
-  ctx.globalAlpha=1;
-
-  // Génoise
-  ctx.fillStyle='#d4a86a'; ctx.fillRect(hx-ovh,hy+2,hw+ovh*2,8);
-  ctx.fillStyle='#c49858'; ctx.fillRect(hx-ovh+3,hy+10,hw+ovh*2-6,5);
-
-  // Faîtière
-  const fg = ctx.createRadialGradient(hx+hw/2,hy-rh,0,hx+hw/2,hy-rh,22);
-  fg.addColorStop(0,'#c07848'); fg.addColorStop(1,'#904828');
-  ctx.fillStyle=fg;
-  ctx.beginPath(); ctx.ellipse(hx+hw/2,hy-rh+3,22,11,0,0,Math.PI*2); ctx.fill();
-  ctx.restore();
+function genoise(x,y,w,h){
+  X.fillStyle='#ccc080';X.fillRect(x,y,w,h);
+  const g=X.createLinearGradient(0,y,0,y+h);
+  g.addColorStop(0,'rgba(255,255,255,.28)');g.addColorStop(.5,'rgba(255,255,255,.04)');g.addColorStop(1,'rgba(0,0,0,.18)');
+  X.fillStyle=g;X.fillRect(x,y,w,h);
+  X.fillStyle='#b4ac6c';X.fillRect(x,y+h,w,4);
+  X.fillStyle='rgba(0,0,0,.08)';X.fillRect(x,y+h+4,w,3);
 }
 
-function foundation(ctx, x, y, w) {
-  const h=22;
-  ctx.fillStyle='#b0a888'; ctx.fillRect(x,y,w,h);
-  let px=x;
-  while(px<x+w) {
-    const pw=38+((Math.sin(px*0.28)*12+14)|0);
-    const hue=40+((Math.sin(px*0.2)*6)|0);
-    ctx.fillStyle=`hsl(${hue},18%,${62+((Math.sin(px*0.4)*5)|0)}%)`;
-    ctx.fillRect(px+1,y+1,pw-2,h-2);
-    ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=1;
-    ctx.strokeRect(px+1,y+1,pw-2,h-2);
-    px+=pw;
+function chimney(){
+  const cx=HX+HW*.38,cy=HY-78,cw=42,ch=58;
+  X.fillStyle='#b09878';X.fillRect(cx,cy,cw,ch);
+  const g=X.createLinearGradient(cx,cy,cx+cw,cy);
+  g.addColorStop(0,'rgba(255,255,255,.08)');g.addColorStop(1,'rgba(0,0,0,.18)');
+  X.fillStyle=g;X.fillRect(cx,cy,cw,ch);
+  X.fillStyle='#c8a870';X.fillRect(cx-5,cy,cw+10,8);
+  const cg=X.createLinearGradient(0,cy,0,cy+8);
+  cg.addColorStop(0,'rgba(255,255,255,.22)');cg.addColorStop(1,'rgba(0,0,0,.1)');
+  X.fillStyle=cg;X.fillRect(cx-5,cy,cw+10,8);
+  const r=rng(77);let ry=cy+10;
+  while(ry<cy+ch-2){const rh=8+Math.floor(r()*5);X.strokeStyle='rgba(0,0,0,.13)';X.lineWidth=.8;X.strokeRect(cx+1,ry,cw-2,rh);ry+=rh+1}
+}
+
+function foundation(x,y,w){
+  const h=26;
+  const g=X.createLinearGradient(0,y,0,y+h);g.addColorStop(0,'#b4aa8c');g.addColorStop(1,'#a09880');
+  X.fillStyle=g;X.fillRect(x,y,w,h);
+  const r=rng(11);let px=x;
+  while(px<x+w){
+    const pw=30+Math.floor(r()*26);if(px+pw>x+w)break;
+    const lm=r()*16-5;const[rc,gc,bc]=hr('#b0a888');
+    X.fillStyle=rh(rc+lm,gc+lm,bc+lm-3);X.fillRect(px+1,y+1,pw-2,h-2);
+    X.fillStyle='rgba(0,0,0,.1)';X.fillRect(px,y,1,h);
+    X.fillStyle='rgba(255,255,255,.08)';X.fillRect(px+2,y+2,pw-4,3);
+    px+=pw+1;
   }
 }
 
-function window2(ctx, x, y, w, h) {
-  const sw=20;
+function windows(col){
+  win(HX+90, HY+HH*.12, 98,120,col,true);
+  win(HX+430,HY+HH*.12, 98,120,col,true);
+  win(HX+86, HY+HH*.56, 86,104,col,false);
+  win(HX+252,HY+HH*.56, 86,104,col,false);
+  win(HX+444,HY+HH*.56, 86,104,col,false);
+  win(WX+28, WY+WH*.18, 80, 98,col,false);
+}
+
+function win(x,y,w,h,col,lg){
+  const rv=7,sw=lg?25:20;
   // Encadrement
-  ctx.fillStyle='#d2c4a0'; ctx.fillRect(x-7,y-7,w+14,h+14);
-  ctx.fillStyle='#c4b690'; ctx.fillRect(x-4,y-4,w+8,h+8);
-
+  X.fillStyle='#d6ca9e';X.fillRect(x-rv-2,y-rv-2,w+rv*2+4,h+rv*2+4);
+  const eg=X.createLinearGradient(x-rv,y-rv,x+w+rv,y+h+rv);
+  eg.addColorStop(0,'rgba(255,255,255,.2)');eg.addColorStop(.5,'rgba(255,255,255,.0)');eg.addColorStop(1,'rgba(0,0,0,.18)');
+  X.fillStyle=eg;X.fillRect(x-rv-2,y-rv-2,w+rv*2+4,h+rv*2+4);
+  // Embrasure
+  X.fillStyle='#cabe96';X.fillRect(x-rv,y-rv,w+rv*2,h+rv*2);
+  // Appui
+  X.fillStyle='#c6ba8e';X.fillRect(x-rv-4,y+h+rv-2,w+rv*2+8,7);
+  const apg=X.createLinearGradient(0,y+h+rv-2,0,y+h+rv+5);
+  apg.addColorStop(0,'rgba(255,255,255,.18)');apg.addColorStop(1,'rgba(0,0,0,.12)');
+  X.fillStyle=apg;X.fillRect(x-rv-4,y+h+rv-2,w+rv*2+8,7);
   // Vitrage
-  const gg = ctx.createLinearGradient(x,y,x+w,y+h);
-  gg.addColorStop(0,'#b0cce0'); gg.addColorStop(0.4,'#d0e8f5'); gg.addColorStop(1,'#a0c0d8');
-  ctx.fillStyle=gg; ctx.fillRect(x,y,w,h);
+  const gg=X.createLinearGradient(x,y,x+w,y+h);
+  gg.addColorStop(0,'#6aaace');gg.addColorStop(.2,'#a8d2ee');gg.addColorStop(.55,'#c6e6f8');gg.addColorStop(.8,'#9ec8e2');gg.addColorStop(1,'#74a4c4');
+  X.fillStyle=gg;X.fillRect(x,y,w,h);
+  // Reflet
+  const rl=X.createLinearGradient(x,y,x+w*.5,y+h*.5);
+  rl.addColorStop(0,'rgba(255,255,255,.22)');rl.addColorStop(.4,'rgba(255,255,255,.06)');rl.addColorStop(1,'rgba(255,255,255,0)');
+  X.fillStyle=rl;X.fillRect(x,y,w,h);
+  // Nuage stylisé
+  X.save();X.globalAlpha=.13;X.fillStyle='white';X.beginPath();X.ellipse(x+w*.3,y+h*.22,w*.19,h*.055,0,0,Math.PI*2);X.fill();X.restore();
   // Croisillons
-  ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w/2,y+h); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x,y+h/2); ctx.lineTo(x+w,y+h/2); ctx.stroke();
-
-  // Volets verts
-  ['#485e3c','#3a4e2e'].forEach((c,side) => {
-    const vx = side===0 ? x-sw-5 : x+w+5;
-    ctx.fillStyle='#486040'; ctx.fillRect(vx,y-4,sw,h+8);
-    for(let sy=y-2;sy<y+h+6;sy+=6) { ctx.fillStyle='rgba(0,0,0,0.11)'; ctx.fillRect(vx,sy,sw,2.5); }
-    ctx.fillStyle='#2e4020';
-    if(side===0) ctx.fillRect(vx,y-4,3,h+8); else ctx.fillRect(vx+sw-3,y-4,3,h+8);
-  });
+  X.strokeStyle='rgba(200,182,132,.75)';X.lineWidth=2;
+  X.beginPath();X.moveTo(x+w/2,y);X.lineTo(x+w/2,y+h);X.stroke();
+  X.beginPath();X.moveTo(x,y+h/2);X.lineTo(x+w,y+h/2);X.stroke();
+  X.strokeStyle='rgba(0,0,0,.18)';X.lineWidth=.5;
+  [w/4,w*3/4].forEach(fx=>{X.beginPath();X.moveTo(x+fx,y);X.lineTo(x+fx,y+h);X.stroke()});
+  [h/3,h*2/3].forEach(fy=>{X.beginPath();X.moveTo(x,y+fy);X.lineTo(x+w,y+fy);X.stroke()});
+  // Volets
+  shutter(x-sw-rv-2,y-rv,sw,h+rv*2);
+  shutter(x+w+rv+2,y-rv,sw,h+rv*2);
 }
 
-function door(ctx, x, y, w, h) {
-  // Encadrement pierre
-  ctx.fillStyle='#d2c4a0'; ctx.fillRect(x-7,y-7,w+14,h+7);
+function shutter(x,y,w,h){
+  const sg=X.createLinearGradient(x,y,x+w,y);
+  sg.addColorStop(0,'#4c6a42');sg.addColorStop(.5,'#406038');sg.addColorStop(1,'#34502e');
+  X.fillStyle=sg;X.fillRect(x,y,w,h);
+  X.save();
+  for(let ly=y+2;ly<y+h-2;ly+=5){
+    const lg2=X.createLinearGradient(0,ly,0,ly+4);
+    lg2.addColorStop(0,'rgba(255,255,255,.07)');lg2.addColorStop(1,'rgba(0,0,0,.1)');
+    X.fillStyle=lg2;X.fillRect(x+1,ly,w-2,4);
+  }
+  X.restore();
+  X.fillStyle='rgba(0,0,0,.18)';X.fillRect(x,y,2,h);X.fillRect(x,y,w,2);
+  X.fillStyle='#1a1a1a';[.25,.75].forEach(t=>X.fillRect(x,y+h*t-2,w,3));
+}
+
+function door(){
+  const dx=HX+HW*.5-44,dy=GY-166,dw=88,dh=138;
+  // Encadrement
+  X.fillStyle='#d4c89e';X.fillRect(dx-10,dy-10,dw+20,dh+10);
+  const ef=X.createLinearGradient(dx-10,dy-10,dx+dw+10,dy+dh);
+  ef.addColorStop(0,'rgba(255,255,255,.18)');ef.addColorStop(1,'rgba(0,0,0,.15)');
+  X.fillStyle=ef;X.fillRect(dx-10,dy-10,dw+20,dh+10);
+  X.fillStyle='#cabe98';
+  X.beginPath();X.moveTo(dx-6,dy+dh);X.lineTo(dx-6,dy+24);X.quadraticCurveTo(dx-6,dy-6,dx+dw/2,dy-6);X.quadraticCurveTo(dx+dw+6,dy-6,dx+dw+6,dy+24);X.lineTo(dx+dw+6,dy+dh);X.closePath();X.fill();
   // Bois
-  const dg = ctx.createLinearGradient(x,y,x+w,y+h);
-  dg.addColorStop(0,'#6a4820'); dg.addColorStop(0.5,'#7e5428'); dg.addColorStop(1,'#563c16');
-  ctx.fillStyle=dg;
-  ctx.beginPath();
-  ctx.moveTo(x,y+h); ctx.lineTo(x,y+32);
-  ctx.quadraticCurveTo(x,y,x+w/2,y);
-  ctx.quadraticCurveTo(x+w,y,x+w,y+32);
-  ctx.lineTo(x+w,y+h); ctx.closePath(); ctx.fill();
+  const dg=X.createLinearGradient(dx,dy,dx+dw,dy+dh);
+  dg.addColorStop(0,'#745220');dg.addColorStop(.4,'#8c6228');dg.addColorStop(1,'#5a3c14');
+  X.fillStyle=dg;
+  X.beginPath();X.moveTo(dx,dy+dh);X.lineTo(dx,dy+28);X.quadraticCurveTo(dx,dy,dx+dw/2,dy);X.quadraticCurveTo(dx+dw,dy,dx+dw,dy+28);X.lineTo(dx+dw,dy+dh);X.closePath();X.fill();
   // Panneaux
-  ctx.strokeStyle='rgba(255,255,255,0.13)'; ctx.lineWidth=1.5;
-  ctx.strokeRect(x+7,y+38,w-14,h*0.28);
-  ctx.strokeRect(x+7,y+38+h*0.31,w-14,h*0.29);
+  X.save();X.globalAlpha=.1;
+  [[dx+8,dy+36,dw-16,dh*.24],[dx+8,dy+36+dh*.28,dw-16,dh*.27]].forEach(([px,py,pw,ph])=>{
+    X.fillStyle='rgba(0,0,0,1)';X.fillRect(px+1,py+1,pw,ph);
+    X.fillStyle='rgba(255,255,255,1)';X.fillRect(px,py,pw,ph);
+    X.fillStyle='rgba(0,0,0,1)';X.fillRect(px+2,py+2,pw-4,ph-4);
+  });
+  X.restore();
+  // Imposte
+  X.save();X.globalAlpha=.72;
+  X.fillStyle='#98cce6';X.beginPath();X.arc(dx+dw/2,dy,dw/2-4,Math.PI,0);X.closePath();X.fill();
+  X.strokeStyle='rgba(200,182,132,.6)';X.lineWidth=1.5;
+  for(let a=0;a<=Math.PI;a+=Math.PI/6){X.beginPath();X.moveTo(dx+dw/2,dy);X.lineTo(dx+dw/2+Math.cos(a)*(dw/2-4),dy-Math.sin(a)*(dw/2-4));X.stroke()}
+  X.restore();
   // Poignée
-  ctx.fillStyle='#c8a030';
-  ctx.beginPath(); ctx.arc(x+w-14,y+h*0.54,5,0,Math.PI*2); ctx.fill();
+  X.fillStyle='#bc9828';X.fillRect(dx+dw-20,dy+dh*.5-18,10,34);
+  X.beginPath();X.arc(dx+dw-16,dy+dh*.5+16,6,0,Math.PI*2);X.fill();
+  X.fillStyle='rgba(0,0,0,.14)';X.fillRect(dx+dw-18,dy+dh*.5-16,8,30);
   // Marche
-  ctx.fillStyle='#c8be9c'; ctx.fillRect(x-10,y+h,w+20,8);
+  X.fillStyle='#ccc0a0';X.fillRect(dx-16,dy+dh,dw+32,10);
+  const mg=X.createLinearGradient(0,dy+dh,0,dy+dh+10);
+  mg.addColorStop(0,'rgba(255,255,255,.18)');mg.addColorStop(1,'rgba(0,0,0,.12)');
+  X.fillStyle=mg;X.fillRect(dx-16,dy+dh,dw+32,10);
 }
 
-function drawVegetation() {
-  const hx=85, hy=108, hw=590, hh=328;
-  cypress(hx-28, hy+hh-16, 0.88);
-  cypress(hx+hw+8, hy+hh-16, 0.72);
-  bush(hx+28, hy+hh+22, 52, 28);
-  bush(hx+hw-76, hy+hh+22, 62, 26);
-  lavender(hx+hw/2-38, hy+hh+20);
+function vegetation(){
+  cypress(HX-24,GY,1.02);cypress(HX-50,GY,.78);
+  cypress(WX+WW+16,GY,.92);
+  bush(HX+18,GY+8,60,36,'#5e7840','#486030');
+  bush(HX+HW-90,GY+8,68,32,'#66803e','#4e6830');
+  bush(WX+WW-14,GY+6,52,30,'#607840','#486030');
+  lavender(HX+HW*.5-52,GY+4);
+  olive(HX-82,GY-8);
 }
 
-function cypress(x, y, s) {
-  ctx.save(); ctx.translate(x,y);
-  for(let cy=0;cy>-138*s;cy-=5.5) {
-    const t=-cy/(138*s), cw=(17-t*13)*s;
-    ctx.fillStyle=`hsl(${118+t*10},${38+t*14}%,${20+t*8}%)`;
-    ctx.beginPath(); ctx.ellipse(0,cy,cw,4.5*s,0,0,Math.PI*2); ctx.fill();
+function cypress(x,y,s){
+  X.save();X.translate(x,y);
+  for(let cy=0;cy>-150*s;cy-=4.2){
+    const t=-cy/(150*s),cw=(14.5-t*12)*s;
+    X.fillStyle=`hsl(${116+t*9},${34+t*12}%,${20+t*9}%)`;
+    X.beginPath();X.ellipse(0,cy,Math.max(cw,.4),3.2*s,0,0,Math.PI*2);X.fill();
   }
-  ctx.restore();
+  X.globalAlpha=.12;X.fillStyle='#262e10';X.beginPath();X.ellipse(7,0,9*s,3,0,0,Math.PI*2);X.fill();
+  X.restore();
 }
 
-function bush(x,y,w,h) {
-  ctx.save();
-  for(let i=0;i<7;i++) {
-    const bx=x+(i/6)*w, by=y-h*0.38+Math.sin(i*1.2)*h*0.22, r=h*0.34+Math.sin(i*0.8)*h*0.1;
-    const bg=ctx.createRadialGradient(bx-r*.2,by-r*.2,0,bx,by,r);
-    bg.addColorStop(0,'#7a9658'); bg.addColorStop(1,'#48662e');
-    ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(bx,by,r,0,Math.PI*2); ctx.fill();
+function bush(x,y,w,h,c1,c2){
+  X.save();
+  for(let i=0;i<8;i++){
+    const bx=x+(i/7)*w+(i%2)*3,by=y-h*.37+Math.sin(i*1.3)*h*.23,r=h*.32+Math.sin(i*.9)*h*.09;
+    const bg=X.createRadialGradient(bx-r*.24,by-r*.2,0,bx,by,r);
+    bg.addColorStop(0,li(c1,8));bg.addColorStop(1,c2);
+    X.fillStyle=bg;X.beginPath();X.arc(bx,by,r,0,Math.PI*2);X.fill();
   }
-  ctx.restore();
+  X.globalAlpha=.1;X.fillStyle='#182008';X.beginPath();X.ellipse(x+w/2,y+4,w*.38,5,0,0,Math.PI*2);X.fill();
+  X.restore();
 }
 
-function lavender(x,y) {
-  ctx.save();
-  for(let i=0;i<9;i++) {
-    const sx=x+i*10+(i%2)*4;
-    ctx.strokeStyle='#6a7840'; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(sx,y+20); ctx.lineTo(sx,y-10); ctx.stroke();
-    ctx.fillStyle=`hsl(${258+i*4},48%,${53+i*2}%)`;
-    ctx.beginPath(); ctx.ellipse(sx,y-13,3.5,11,0,0,Math.PI*2); ctx.fill();
+function lavender(x,y){
+  X.save();
+  for(let i=0;i<13;i++){
+    const sx=x+i*9+(i%2)*5;
+    X.strokeStyle='#6a7a3e';X.lineWidth=1.2;X.beginPath();X.moveTo(sx,y+18);X.lineTo(sx,y-13);X.stroke();
+    const lh=i%3===0?17:13;
+    X.fillStyle=`hsl(${254+i*4},${44+i%3*5}%,${50+i%4*3}%)`;
+    X.beginPath();X.ellipse(sx,y-13-lh/2,3,lh/2,0,0,Math.PI*2);X.fill();
   }
-  ctx.restore();
+  X.restore();
 }
 
-function drawPath() {
-  const cx=CW/2;
-  ctx.save();
-  const pg=ctx.createLinearGradient(cx,CH*0.79,cx,CH);
-  pg.addColorStop(0,'#c8b88a'); pg.addColorStop(1,'#b4a478');
-  ctx.fillStyle=pg;
-  ctx.beginPath();
-  ctx.moveTo(cx-26,CH*0.82); ctx.lineTo(cx+26,CH*0.82);
-  ctx.lineTo(cx+58,CH); ctx.lineTo(cx-58,CH); ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+function olive(x,y){
+  X.save();X.translate(x,y);
+  X.strokeStyle='#6a4e2e';X.lineWidth=9;X.lineCap='round';
+  X.beginPath();X.moveTo(0,0);X.bezierCurveTo(-4,-28,7,-52,-3,-72);X.stroke();
+  X.lineWidth=5;
+  X.beginPath();X.moveTo(-3,-72);X.bezierCurveTo(-17,-90,-28,-78,-26,-66);X.stroke();
+  X.beginPath();X.moveTo(-3,-72);X.bezierCurveTo(9,-86,19,-80,17,-68);X.stroke();
+  [[-26,-70,22],[-3,-86,25],[17,-72,19],[-13,-76,17]].forEach(([ox,oy,r])=>{
+    const fg=X.createRadialGradient(ox,oy,0,ox,oy,r);
+    fg.addColorStop(0,'#8a9c66');fg.addColorStop(1,'#5a6e3e');
+    X.fillStyle=fg;X.beginPath();X.arc(ox,oy,r,0,Math.PI*2);X.fill();
+  });
+  X.restore();
 }
 
-// ─── ANIMATION FADE ───
-let curHex = PALETTE[0].hex;
-let fromHex = curHex;
-let toHex   = curHex;
-let fadeT   = 1, fadeStart = null;
-const FADE  = 550;
-let rafId   = null;
-
-function startFade(hex) {
-  fromHex  = curHex;
-  toHex    = hex;
-  fadeT    = 0; fadeStart = null;
-  cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(tick);
+function groundDetail(){
+  const px=W/2-30,pw=60;
+  X.save();
+  const pg=X.createLinearGradient(W/2,GY,W/2,H);
+  pg.addColorStop(0,'#cec898');pg.addColorStop(1,'#b6b27c');
+  X.fillStyle=pg;X.beginPath();X.moveTo(px,GY);X.lineTo(px+pw,GY);X.lineTo(px+pw+66,H);X.lineTo(px-66,H);X.closePath();X.fill();
+  X.strokeStyle='rgba(0,0,0,.1)';X.lineWidth=1;
+  for(let py=GY+16;py<H;py+=17){
+    const t=(py-GY)/(H-GY);
+    X.beginPath();X.moveTo(px-66*t,py);X.lineTo(px+pw+66*t,py);X.stroke();
+    X.beginPath();X.moveTo(W/2,GY);X.lineTo(W/2,H);X.stroke();
+  }
+  X.restore();
+  X.save();X.globalAlpha=.42;
+  const r=rng(21);
+  for(let gx=0;gx<W;gx+=6){
+    if(gx>px-85&&gx<px+pw+85)continue;
+    const gh=3+r()*4.5;
+    X.strokeStyle=`hsl(${106+r()*15},${38+r()*18}%,${26+r()*13}%)`;
+    X.lineWidth=1.1;X.beginPath();X.moveTo(gx,GY);X.quadraticCurveTo(gx+(r()-.5)*4,GY-gh*.55,gx+(r()-.5)*3,GY-gh);X.stroke();
+  }
+  X.restore();
 }
 
-function tick(ts) {
-  if(!fadeStart) fadeStart=ts;
-  fadeT = Math.min((ts-fadeStart)/FADE, 1);
-  const e = 1-Math.pow(1-fadeT, 2.8);
-  curHex = lerpColor(fromHex, toHex, e);
-  draw(curHex);
-  if(fadeT<1) rafId=requestAnimationFrame(tick);
-  else { curHex=toHex; draw(curHex); }
+function atmosphere(){
+  const ag=X.createLinearGradient(0,0,W,0);
+  ag.addColorStop(0,'rgba(198,212,228,.1)');ag.addColorStop(.5,'rgba(198,212,228,0)');ag.addColorStop(1,'rgba(198,212,228,.07)');
+  X.fillStyle=ag;X.fillRect(0,0,W,H);
+  const vg=X.createRadialGradient(W/2,H/2,H*.28,W/2,H/2,H*.88);
+  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.09)');
+  X.fillStyle=vg;X.fillRect(0,0,W,H);
 }
 
-// ─── ÉVENTAIL ───
-function buildFan() {
-  const g = document.getElementById('fanGrid');
-  g.innerHTML = PALETTE.map((p,i)=>`
-    <div class="fan-card" data-i="${i}" title="${p.name}">
-      <div class="fan-color" style="background:${p.hex}"></div>
-      <div class="fan-info">
-        <div class="fan-name">${p.name}</div>
-        <div class="fan-code">${p.code}</div>
-      </div>
-    </div>`).join('');
-  g.querySelectorAll('.fan-card').forEach(c=>c.addEventListener('click',()=>pick(+c.dataset.i)));
+// ── Fade ──
+let curH=PAL[0].h,fromH=curH,toH=curH,fT=1,fStart=null,fId=null;
+const FD=580;
+function fade(hex){fromH=curH;toH=hex;fT=0;fStart=null;cancelAnimationFrame(fId);fId=requestAnimationFrame(ft)}
+function ft(ts){if(!fStart)fStart=ts;fT=Math.min((ts-fStart)/FD,1);const e=1-Math.pow(1-fT,2.8);curH=lh(fromH,toH,e);draw(curH);if(fT<1)fId=requestAnimationFrame(ft);else{curH=toH;draw(curH)}}
+
+// ── Fan ──
+function buildFan(){
+  const g=document.getElementById('fg');
+  g.innerHTML=PAL.map((p,i)=>`<div class="fc${i===0?' active':''}" data-i="${i}" title="${p.n}"><div class="fcol" style="background:${p.h}"></div><div class="fi"><div class="fn">${p.n}</div><div class="fcd">${p.c}</div></div></div>`).join('');
+  g.querySelectorAll('.fc').forEach(c=>c.addEventListener('click',()=>pick(+c.dataset.i)));
 }
 
-function pick(i) {
-  const p = PALETTE[i];
-  document.querySelectorAll('.fan-card').forEach((c,j)=>c.classList.toggle('active',j===i));
-  document.getElementById('badgeSwatch').style.background = p.hex;
-  document.getElementById('badgeName').textContent = p.name;
-  document.getElementById('badgeRef').textContent  = `weber.col ${p.code}`;
-  document.getElementById('hint').style.opacity    = '0';
-  startFade(p.hex);
+function pick(i){
+  const p=PAL[i];
+  document.querySelectorAll('.fc').forEach((c,j)=>c.classList.toggle('active',j===i));
+  document.getElementById('bs').style.background=p.h;
+  document.getElementById('bn').textContent=p.n;
+  document.getElementById('br').textContent=`weber.col ${p.c}`;
+  document.getElementById('hint').style.opacity='0';
+  fade(p.h);
 }
 
-// ─── INIT ───
-buildFan();
-draw(curHex);
-document.getElementById('badgeSwatch').style.background = PALETTE[0].hex;
-setTimeout(()=>pick(0), 300);
+buildFan();draw(curH);
+document.getElementById('bs').style.background=PAL[0].h;
+document.getElementById('bn').textContent=PAL[0].n;
+document.getElementById('br').textContent=`weber.col ${PAL[0].c}`;
+setTimeout(()=>pick(0),300);
 </script>
 </body>
 </html>
