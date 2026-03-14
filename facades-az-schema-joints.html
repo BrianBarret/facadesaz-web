@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joints de pierre — Étapes du rejointoiement</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:      #5a9e1a;
+    --green-dark: #3d6e10;
+    --amber:      #c97d10;
+    --gray-dark:  #3a3a3a;
+    --off-white:  #f4f5f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--off-white);
+    color: var(--gray-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px 32px;
+  }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 3px;
+    color: var(--green);
+    border: 1px solid rgba(90,158,26,0.35);
+    padding: 4px 14px; border-radius: 2px;
+    margin-bottom: 14px; display: inline-block;
+  }
+  h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 38px; font-weight: 800;
+    letter-spacing: 1px; line-height: 1.05;
+    color: var(--gray-dark); margin-bottom: 8px; text-align: center;
+  }
+  h2 em { color: var(--green); font-style: normal; }
+  .subtitle { font-size: 15px; color: #888; margin-bottom: 36px; text-align: center; line-height: 1.5; }
+
+  .main {
+    width: 100%; max-width: 940px;
+    display: grid; grid-template-columns: 1fr 340px;
+    gap: 0; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.18); min-height: 380px;
+  }
+  .wall-panel { position: relative; background: #2a2420; overflow: hidden; min-height: 380px; }
+  canvas#wallCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .step-badge {
+    position: absolute; top: 16px; left: 16px; z-index: 20;
+    background: rgba(30,24,20,0.88); border-left: 3px solid var(--green);
+    padding: 8px 14px; border-radius: 0 4px 4px 0;
+  }
+  .step-badge .num {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--green);
+  }
+  .step-badge .name {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800;
+    color: white; letter-spacing: 0.5px; line-height: 1.1;
+  }
+
+  .info-panel {
+    background: var(--gray-dark); color: white;
+    padding: 28px 32px; display: flex;
+    flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .info-panel::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.015) 19px, rgba(255,255,255,0.015) 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255,255,255,0.015) 19px, rgba(255,255,255,0.015) 20px);
+    pointer-events: none;
+  }
+  .steps-nav { display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 1; }
+  .step-btn {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 12px; border-radius: 6px; cursor: pointer;
+    transition: background 0.2s; border: 1px solid transparent; user-select: none;
+  }
+  .step-btn:hover { background: rgba(255,255,255,0.05); }
+  .step-btn.active { background: rgba(90,158,26,0.14); border-color: rgba(90,158,26,0.3); }
+  .step-num {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800;
+    color: rgba(255,255,255,0.18); width: 24px; flex-shrink: 0; line-height: 1; transition: color 0.25s;
+  }
+  .step-btn.active .step-num { color: var(--green); }
+  .step-icon { font-size: 18px; flex-shrink: 0; opacity: 0.4; margin-top: 1px; transition: opacity 0.25s; }
+  .step-btn.active .step-icon { opacity: 1; }
+  .step-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: rgba(255,255,255,0.4); transition: color 0.25s; line-height: 1.2;
+  }
+  .step-btn.active .step-title { color: white; }
+  .step-desc {
+    font-size: 12px; color: rgba(255,255,255,0); margin-top: 4px; line-height: 1.5;
+    max-height: 0; overflow: hidden; transition: color 0.25s, max-height 0.3s;
+  }
+  .step-btn.active .step-desc { color: rgba(255,255,255,0.55); max-height: 80px; }
+
+  .global-progress { position: relative; z-index: 1; margin-top: 16px; }
+  .gp-label {
+    display: flex; justify-content: space-between;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    color: rgba(255,255,255,0.25); margin-bottom: 6px;
+  }
+  .gp-track { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .gp-fill { height: 100%; background: var(--green); border-radius: 2px; width: 0; transition: width 0.08s linear; }
+
+  .btns { display: flex; gap: 8px; margin-top: 14px; position: relative; z-index: 1; }
+  .btn {
+    flex: 1; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 9px 10px; border-radius: 4px; border: none; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-prev { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
+  .btn-prev:hover { background: rgba(255,255,255,0.12); }
+  .btn-next { background: var(--green); color: white; }
+  .btn-next:hover { background: var(--green-dark); }
+  .btn-replay { background: rgba(201,125,16,0.18); color: var(--amber); border: 1px solid rgba(201,125,16,0.3); }
+  .btn-replay:hover { background: rgba(201,125,16,0.3); }
+
+  @media (max-width: 640px) {
+    .main { grid-template-columns: 1fr; }
+    .wall-panel { min-height: 220px; }
+    .info-panel { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="section-label">Notre méthode</div>
+<h2>Les étapes du <em>rejointoiement</em></h2>
+<p class="subtitle">Un travail minutieux en 4 phases pour un résultat durable</p>
+
+<div class="main">
+  <div class="wall-panel" id="wallPanel">
+    <canvas id="wallCanvas"></canvas>
+    <div class="step-badge">
+      <div class="num" id="badgeNum">ÉTAPE 01</div>
+      <div class="name" id="badgeName">Piquage</div>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="steps-nav" id="stepsNav"></div>
+    <div>
+      <div class="global-progress">
+        <div class="gp-label"><span>Progression</span><span id="gpPct">0%</span></div>
+        <div class="gp-track"><div class="gp-fill" id="gpFill"></div></div>
+      </div>
+      <div class="btns">
+        <button class="btn btn-prev" id="btnPrev">← Préc.</button>
+        <button class="btn btn-next" id="btnNext">Suivant →</button>
+        <button class="btn btn-replay" id="btnReplay" style="display:none;">↺ Rejouer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Pseudo-random seedé (pas de bruit visuel entre frames) ──
+function mkRnd(seed) {
+  let s = seed >>> 0;
+  return () => { s = (Math.imul(s, 747796405) + 2891336453) >>> 0; return s / 4294967296; };
+}
+
+// ── Construction des pierres (une seule fois par taille de canvas) ──
+let STONES = null;
+function buildStones(W, H) {
+  const r = mkRnd(42);
+  const out = [];
+  const rowY = [0, .13, .25, .37, .50, .62, .74, .86, 1.0];
+  for (let ri = 0; ri < rowY.length - 1; ri++) {
+    const y1 = rowY[ri] * H + 4;
+    const y2 = rowY[ri+1] * H - 4;
+    const off = ri % 2 === 0 ? 0 : .10;
+    let cx = -off;
+    while (cx < 1.05) {
+      const cw = .16 + r() * .10;
+      const x1 = cx * W + 4;
+      const x2 = Math.min((cx + cw) * W - 4, W - 4);
+      if (x2 > x1 + 18) {
+        // Couleur naturelle : ocre-beige-gris
+        const hue = 26 + r() * 16;
+        const sat = 16 + r() * 14;
+        const lig = 42 + r() * 20;
+        out.push({ x1, y1, x2, y2, hue, sat, lig, seed: (r() * 9999) | 0 });
+      }
+      cx += cw + .005;
+    }
+  }
+  return out;
+}
+
+// ── Dessin d'une pierre (organique, pas de pixels clignotants) ──
+function stone(ctx, s, lm) {
+  const { x1, y1, x2, y2, hue, sat, lig, seed } = s;
+  lm = lm || 1;
+  const w = x2 - x1, h = y2 - y1;
+
+  // Dégradé vertical naturel
+  const g = ctx.createLinearGradient(x1, y1, x1, y2);
+  g.addColorStop(0,   `hsl(${hue},${sat}%,${Math.min(lig*lm*1.10,80)}%)`);
+  g.addColorStop(.45, `hsl(${hue},${sat}%,${Math.min(lig*lm,76)}%)`);
+  g.addColorStop(1,   `hsl(${hue},${sat}%,${Math.min(lig*lm*.86,64)}%)`);
+  ctx.fillStyle = g;
+  ctx.fillRect(x1, y1, w, h);
+
+  // Reflet haut
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.fillRect(x1+2, y1+2, w-4, Math.min(h*.22, 5));
+
+  // Ombre bas
+  ctx.fillStyle = 'rgba(0,0,0,0.09)';
+  ctx.fillRect(x1+2, y2-Math.min(h*.20,5), w-4, Math.min(h*.20,5));
+
+  // Taches naturelles FIXES (basées sur seed, pas sur Date.now)
+  const r2 = mkRnd(seed);
+  for (let i = 0; i < 4; i++) {
+    const tx = x1 + 4 + r2()*(w-8);
+    const ty = y1 + 4 + r2()*(h-8);
+    const tr = r2()*4+1;
+    const dark = r2() > .5;
+    ctx.globalAlpha = r2()*.07;
+    ctx.fillStyle = dark ? '#000' : '#fff';
+    ctx.beginPath();
+    ctx.ellipse(tx, ty, tr, tr*.55, r2()*Math.PI, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+// ── Joints horizontaux et verticaux ──
+const ROW_Y  = [0, .13, .25, .37, .50, .62, .74, .86];
+const COL_X  = [.04, .185, .33, .475, .625, .77];
+
+function drawJoints(ctx, W, H, color, fromX, toX) {
+  ctx.fillStyle = color;
+  const fx = fromX ?? 0;
+  const tx = toX ?? W;
+  ROW_Y.forEach(ry => ctx.fillRect(fx, ry*H+1, tx-fx, 6));
+  COL_X.forEach(cx => { const x = cx*W; if (x >= fx && x <= tx) ctx.fillRect(x, 0, 5, H); });
+}
+
+// ═══════════════════════════════
+// DESSIN DES 4 ÉTATS
+// ═══════════════════════════════
+
+function drawS0(ctx, W, H, p) { // PIQUAGE
+  ctx.fillStyle = '#6a5848'; ctx.fillRect(0,0,W,H);
+  if (!STONES) STONES = buildStones(W, H);
+  STONES.forEach(s => stone(ctx, s, .90));
+  // Vieux joints dégradés
+  drawJoints(ctx, W, H, '#7a6050');
+  // Fissures dans les joints
+  const r = mkRnd(7);
+  ctx.save(); ctx.strokeStyle = 'rgba(30,18,10,.5)'; ctx.lineWidth = 1;
+  for (let i = 0; i < 35; i++) {
+    const x = r()*W, y = r()*H, a = r()*Math.PI, l = r()*16+4;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(a)*l, y+Math.sin(a)*l); ctx.stroke();
+  }
+  ctx.restore();
+  // Mousses
+  [[.18,.22,34],[.62,.55,26],[.40,.78,20]].forEach(([rx,ry,rad]) => {
+    const gm = ctx.createRadialGradient(rx*W,ry*H,0,rx*W,ry*H,rad);
+    gm.addColorStop(0,'rgba(50,80,25,.42)'); gm.addColorStop(1,'rgba(50,80,25,0)');
+    ctx.fillStyle=gm; ctx.beginPath();
+    ctx.ellipse(rx*W,ry*H,rad,rad*.65,.4,0,Math.PI*2); ctx.fill();
+  });
+
+  if (p <= 0) return;
+  // Zone piquée (joints arrachés)
+  const clipW = W * Math.min(p*1.1, 1) * .96;
+  ctx.fillStyle = '#3a2a1e';
+  ROW_Y.forEach(ry => ctx.fillRect(0, ry*H+1, clipW, 6));
+  COL_X.forEach(cx => { if (cx*W < clipW) ctx.fillRect(cx*W, 0, 5, H); });
+
+  // Outil : marteau-burin
+  const px = clipW, py = H*.42;
+  const vib = Math.sin(p*65) * (p < .85 ? 2.2 : 0);
+  ctx.save(); ctx.translate(px+vib, py+Math.abs(vib)*.4);
+  // manche
+  ctx.save(); ctx.rotate(-.55);
+  const mg = ctx.createLinearGradient(-4,-52,4,0); mg.addColorStop(0,'#a07820'); mg.addColorStop(1,'#8a6418');
+  ctx.fillStyle=mg; ctx.beginPath(); ctx.roundRect(-4,-52,8,56,3); ctx.fill(); ctx.restore();
+  // tête
+  ctx.save(); ctx.rotate(-.55);
+  const hg = ctx.createLinearGradient(-12,-62,12,-48); hg.addColorStop(0,'#b8b8b8'); hg.addColorStop(.5,'#d8d8d8'); hg.addColorStop(1,'#909090');
+  ctx.fillStyle=hg; ctx.beginPath(); ctx.roundRect(-12,-62,24,12,2); ctx.fill(); ctx.restore();
+  // burin
+  ctx.save(); ctx.rotate(.38);
+  ctx.fillStyle='#aaa'; ctx.fillRect(-2.5,0,5,24);
+  ctx.fillStyle='#888'; ctx.beginPath(); ctx.moveTo(-3.5,24); ctx.lineTo(3.5,24); ctx.lineTo(0,30); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // éclats fixes
+  const re = mkRnd((p*30)|0);
+  for (let i=0;i<5;i++) {
+    const a=re()*Math.PI*2, r=6+re()*10;
+    ctx.fillStyle=`rgba(155,135,105,${.5-p*.2})`;
+    ctx.beginPath(); ctx.arc(Math.cos(a)*r,Math.sin(a)*r,1.5,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawS1(ctx, W, H, p) { // NETTOYAGE
+  ctx.fillStyle = '#3a2a1e'; ctx.fillRect(0,0,W,H);
+  if (!STONES) STONES = buildStones(W, H);
+  STONES.forEach(s => stone(ctx, s, .94));
+  drawJoints(ctx, W, H, '#2e2018');
+
+  // Résidus (s'effacent)
+  if (p < .75) {
+    const r=mkRnd(99); ctx.save();
+    for (let i=0;i<90;i++) {
+      const a=(1-p/.75)*.28*r();
+      ctx.fillStyle=`rgba(185,165,135,${a})`;
+      ctx.beginPath(); ctx.arc(r()*W, r()*H, r()*2+.5, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  const jetX = W*.08 + W*.78*Math.min(p*1.15,1);
+
+  // Pierres nettoyées + joints propres (gauche du jet)
+  if (p > .05) {
+    ctx.save(); ctx.globalAlpha = Math.min(p*2,.9);
+    STONES.forEach(s => { if ((s.x1+s.x2)/2 < jetX-28) stone(ctx, s, 1.06); });
+    ctx.globalAlpha=1;
+    ctx.fillStyle='#281c10';
+    ROW_Y.forEach(ry => ctx.fillRect(0, ry*H+1, jetX-28, 6));
+    COL_X.forEach(cx => { if (cx*W < jetX-28) ctx.fillRect(cx*W, 0, 5, H); });
+    ctx.restore();
+
+    // Lance HP
+    ctx.save(); ctx.translate(jetX, H*.33);
+    const lg=ctx.createLinearGradient(-28,-5,44,5); lg.addColorStop(0,'#909090'); lg.addColorStop(1,'#606060');
+    ctx.fillStyle=lg; ctx.beginPath(); ctx.roundRect(-28,-5,72,10,3); ctx.fill();
+    ctx.fillStyle='#505050'; ctx.beginPath(); ctx.roundRect(42,-3,14,6,2); ctx.fill();
+    // Jet
+    const wg=ctx.createLinearGradient(56,0,124,0); wg.addColorStop(0,'rgba(155,205,255,.88)'); wg.addColorStop(.65,'rgba(130,190,255,.45)'); wg.addColorStop(1,'rgba(130,190,255,0)');
+    ctx.fillStyle=wg; ctx.beginPath(); ctx.moveTo(56,-2); ctx.lineTo(124,-9); ctx.lineTo(124,9); ctx.lineTo(56,2); ctx.fill();
+    // Gouttes fixes (seed sur frame)
+    const rw=mkRnd(((p*60)|0));
+    for (let i=0;i<9;i++) {
+      ctx.fillStyle=`rgba(155,205,255,${.55-rw()*.35})`;
+      ctx.beginPath(); ctx.arc(68+rw()*58,(rw()-.5)*20,rw()*2.5+.5,0,Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawS2(ctx, W, H, p) { // GARNISSAGE
+  ctx.fillStyle = '#2e2018'; ctx.fillRect(0,0,W,H);
+  if (!STONES) STONES = buildStones(W, H);
+  STONES.forEach(s => stone(ctx, s, 1.0));
+
+  const fx = W*Math.min(p*1.05,1);
+  // Joints vides (droite)
+  drawJoints(ctx, W, H, '#281c10', fx, W);
+
+  // Mortier frais (gauche)
+  if (p > 0) {
+    const mg=ctx.createLinearGradient(0,0,fx,0); mg.addColorStop(0,'#c8c0a0'); mg.addColorStop(1,'#d0c8a8');
+    ctx.fillStyle=mg;
+    ROW_Y.forEach(ry => ctx.fillRect(0, ry*H+1, fx, 6));
+    COL_X.forEach(cx => { if (cx*W < fx) ctx.fillRect(cx*W, 0, 5, H); });
+
+    // Truelle
+    const tx2=Math.min(fx+4,W-26), ty=H*.40;
+    ctx.save(); ctx.translate(tx2, ty);
+    const mh=ctx.createLinearGradient(-4,-44,4,0); mh.addColorStop(0,'#a07820'); mh.addColorStop(1,'#8a6418');
+    ctx.fillStyle=mh; ctx.save(); ctx.rotate(-.18); ctx.beginPath(); ctx.roundRect(-4,-44,8,46,3); ctx.fill(); ctx.restore();
+    const tg=ctx.createLinearGradient(-14,0,14,22); tg.addColorStop(0,'#c0c0c0'); tg.addColorStop(1,'#888');
+    ctx.fillStyle=tg; ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(14,0); ctx.lineTo(10,22); ctx.lineTo(-10,22); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(200,190,158,.75)'; ctx.beginPath(); ctx.moveTo(-12,2); ctx.lineTo(12,2); ctx.lineTo(8,12); ctx.lineTo(-8,12); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(200,192,158,.88)'; ctx.beginPath(); ctx.ellipse(0,25,4,3,0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawS3(ctx, W, H, p) { // FINITION BROSSÉE
+  ctx.fillStyle = '#c4bc9c'; ctx.fillRect(0,0,W,H);
+  if (!STONES) STONES = buildStones(W, H);
+  STONES.forEach(s => stone(ctx, s, 1.0));
+
+  const fx = W*Math.min(p*1.05,1);
+  // Droite — mortier non brossé
+  ctx.fillStyle='#ccc4a4';
+  ROW_Y.forEach(ry => ctx.fillRect(fx, ry*H+1, W-fx, 6));
+  COL_X.forEach(cx => { if (cx*W > fx) ctx.fillRect(cx*W, 0, 5, H); });
+
+  // Gauche — joints brossés (légèrement en retrait)
+  if (p > 0) {
+    ctx.fillStyle='#b0a888';
+    ROW_Y.forEach(ry => ctx.fillRect(0, ry*H+2, fx, 4));
+    COL_X.forEach(cx => { if (cx*W < fx) ctx.fillRect(cx*W+1, 0, 3, H); });
+    // Reflet
+    ctx.fillStyle='rgba(255,255,255,.10)';
+    ROW_Y.forEach(ry => ctx.fillRect(0, ry*H+2, fx, 1));
+
+    // Brosse
+    if (p < .97) {
+      const bx=Math.min(fx+2,W-32), by=H*.44;
+      ctx.save(); ctx.translate(bx, by);
+      const bm=ctx.createLinearGradient(-4,-46,4,0); bm.addColorStop(0,'#a07820'); bm.addColorStop(1,'#8a6418');
+      ctx.fillStyle=bm; ctx.save(); ctx.rotate(-.15); ctx.beginPath(); ctx.roundRect(-4,-46,8,48,3); ctx.fill(); ctx.restore();
+      ctx.fillStyle='#888'; ctx.beginPath(); ctx.roundRect(-16,0,32,9,2); ctx.fill();
+      ctx.fillStyle='#555';
+      for (let i=-14;i<16;i+=3) ctx.fillRect(i,9,1.5,7);
+      // Poussière fixe
+      const rd=mkRnd((p*40)|0);
+      for (let i=0;i<7;i++) {
+        ctx.fillStyle=`rgba(172,164,132,${.38-rd()*.28})`;
+        ctx.beginPath(); ctx.arc((rd()-.5)*22, 16+rd()*10, rd()*2.5+.5, 0, Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Fin — overlay vert + check
+    if (p >= .93) {
+      const a=Math.min((p-.93)/.07,1);
+      ctx.save(); ctx.globalAlpha=a*.14; ctx.fillStyle='#5a9e1a'; ctx.fillRect(0,0,W,H); ctx.restore();
+      ctx.save(); ctx.globalAlpha=a;
+      ctx.strokeStyle='rgba(90,158,26,.85)'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath(); ctx.moveTo(W*.38,H*.50); ctx.lineTo(W*.47,H*.62); ctx.lineTo(W*.64,H*.36); ctx.stroke();
+      ctx.restore();
+    }
+  }
+}
+
+// ═══════════════════════════════
+// DONNÉES & MOTEUR
+// ═══════════════════════════════
+const steps = [
+  { num:'01', icon:'⛏️', title:'Piquage',
+    desc:'Élimination des anciens joints dégradés à la meuleuse ou au burin. On descend jusqu\'au fond pour garantir une accroche parfaite.',
+    draw: drawS0 },
+  { num:'02', icon:'💨', title:'Nettoyage',
+    desc:'Dépoussiérage et nettoyage haute pression des saignées. Les pierres sont humidifiées pour éviter un séchage trop rapide.',
+    draw: drawS1 },
+  { num:'03', icon:'🪣', title:'Garnissage',
+    desc:'Application du mortier de rejointoiement à la truelle. Remplissage en couches successives jusqu\'à ras de pierre.',
+    draw: drawS2 },
+  { num:'04', icon:'✅', title:'Finition brossée',
+    desc:'Brossage avant séchage complet pour une finition nette, légèrement en retrait. Résultat propre et durable.',
+    draw: drawS3 },
+];
+
+const canvas = document.getElementById('wallCanvas');
+const ctx    = canvas.getContext('2d');
+const panel  = document.getElementById('wallPanel');
+
+const STEP_DUR   = 2000;
+const PAUSE_DUR  = 800;
+
+let curStep  = 0;
+let stepPrg  = 0;
+let animId   = null;
+let stepT0   = null;
+let pauseId  = null;
+let finished = false;
+
+function setSize() {
+  canvas.width  = panel.offsetWidth  || 560;
+  canvas.height = panel.offsetHeight || 380;
+  STONES = null;
+}
+
+function easeOut(t) { return 1 - Math.pow(1-t, 2.5); }
+
+function drawFrame() {
+  if (!STONES) STONES = buildStones(canvas.width, canvas.height);
+  steps[curStep].draw(ctx, canvas.width, canvas.height, easeOut(stepPrg));
+}
+
+function updateUI() {
+  const s = steps[curStep];
+  document.getElementById('badgeNum').textContent  = `ÉTAPE ${s.num}`;
+  document.getElementById('badgeName').textContent = s.title;
+  document.querySelectorAll('.step-btn').forEach((b,i) => b.classList.toggle('active', i === curStep));
+  const isEnd = finished && curStep === steps.length-1;
+  document.getElementById('btnNext').style.display   = isEnd ? 'none'         : 'inline-block';
+  document.getElementById('btnReplay').style.display = isEnd ? 'inline-block' : 'none';
+  document.getElementById('btnPrev').disabled = curStep === 0;
+  const pct = (curStep + stepPrg) / steps.length * 100;
+  document.getElementById('gpFill').style.width = pct.toFixed(1) + '%';
+  document.getElementById('gpPct').textContent  = Math.round(pct) + '%';
+}
+
+function tick(ts) {
+  if (!stepT0) stepT0 = ts;
+  stepPrg = Math.min((ts - stepT0) / STEP_DUR, 1);
+  drawFrame(); updateUI();
+  if (stepPrg < 1) {
+    animId = requestAnimationFrame(tick);
+  } else {
+    stepPrg = 1; drawFrame(); updateUI();
+    if (curStep < steps.length-1) {
+      pauseId = setTimeout(() => {
+        curStep++; stepT0=null; stepPrg=0; STONES=null;
+        animId = requestAnimationFrame(tick);
+      }, PAUSE_DUR);
+    } else {
+      finished = true; updateUI();
+    }
+  }
+}
+
+function goTo(i) {
+  cancelAnimationFrame(animId); clearTimeout(pauseId);
+  finished=false; curStep=i; stepPrg=0; stepT0=null; STONES=null;
+  animId = requestAnimationFrame(tick);
+}
+
+// Nav
+function buildNav() {
+  const nav = document.getElementById('stepsNav');
+  nav.innerHTML = steps.map((s,i) => `
+    <div class="step-btn${i===0?' active':''}" data-i="${i}">
+      <div class="step-num">${s.num}</div>
+      <div class="step-icon">${s.icon}</div>
+      <div class="step-text">
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+    </div>`).join('');
+  nav.querySelectorAll('.step-btn').forEach(b => b.addEventListener('click', () => goTo(+b.dataset.i)));
+}
+
+document.getElementById('btnNext').addEventListener('click',   () => { if (curStep < steps.length-1) goTo(curStep+1); });
+document.getElementById('btnPrev').addEventListener('click',   () => { if (curStep > 0) goTo(curStep-1); });
+document.getElementById('btnReplay').addEventListener('click', () => goTo(0));
+window.addEventListener('resize', () => { setSize(); drawFrame(); });
+
+buildNav(); setSize();
+setTimeout(() => goTo(0), 400);
+</script>
+</body>
+</html>
