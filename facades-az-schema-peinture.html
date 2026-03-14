@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peinture façade — Nuancier Weber</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:      #5a9e1a;
+    --green-dark: #3d6e10;
+    --amber:      #c97d10;
+    --gray-dark:  #3a3a3a;
+    --off-white:  #f4f5f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--off-white);
+    color: var(--gray-dark);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px 16px 32px;
+  }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 3px;
+    color: var(--green); border: 1px solid rgba(90,158,26,0.35);
+    padding: 4px 14px; border-radius: 2px;
+    margin-bottom: 12px; display: inline-block;
+  }
+  h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px; font-weight: 800; letter-spacing: 1px;
+    color: var(--gray-dark); margin-bottom: 6px; text-align: center;
+  }
+  h2 em { color: var(--green); font-style: normal; }
+  .subtitle { font-size: 14px; color: #888; margin-bottom: 28px; text-align: center; }
+
+  .house-wrap {
+    width: 100%; max-width: 860px; position: relative;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.2); background: #1a2a3a;
+  }
+  canvas#houseCanvas { display: block; width: 100%; height: auto; }
+
+  .color-badge {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(20,16,12,0.9); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+    backdrop-filter: blur(6px);
+  }
+  .badge-swatch {
+    width: 32px; height: 32px; border-radius: 4px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    transition: background 0.4s; flex-shrink: 0;
+  }
+  .badge-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: white; letter-spacing: 0.5px; line-height: 1.1;
+  }
+  .badge-ref { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+  .hint {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5);
+    background: rgba(0,0,0,0.32); padding: 4px 12px; border-radius: 10px;
+    white-space: nowrap; transition: opacity 0.6s; pointer-events: none;
+  }
+
+  /* ── ÉVENTAIL ── */
+  .fan-section { width: 100%; max-width: 860px; margin-top: 22px; }
+  .fan-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .fan-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; color: #999;
+  }
+  .fan-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700; color: #bbb; letter-spacing: 1px;
+    border: 1px solid #ddd; padding: 3px 10px; border-radius: 3px;
+  }
+  .fan-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fan-card {
+    flex: 0 0 auto; width: 64px;
+    border-radius: 4px 4px 3px 3px; overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.14);
+    border: 2px solid transparent; background: white;
+  }
+  .fan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.28); z-index: 2;
+  }
+  .fan-card.active {
+    border-color: #333;
+    transform: translateY(-7px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.38); z-index: 3;
+  }
+  .fan-color { height: 56px; width: 100%; }
+  .fan-info { padding: 4px 5px 5px; background: white; }
+  .fan-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.2px; color: #444; line-height: 1.2;
+  }
+  .fan-code { font-size: 8.5px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Gamme Weber</div>
+<h2>Visualisez votre <em>façade</em></h2>
+<p class="subtitle">Cliquez sur une teinte pour visualiser le rendu en temps réel</p>
+
+<div class="house-wrap">
+  <canvas id="houseCanvas" width="860" height="440"></canvas>
+  <div class="color-badge">
+    <div class="badge-swatch" id="badgeSwatch"></div>
+    <div>
+      <div class="badge-name" id="badgeName">—</div>
+      <div class="badge-ref"  id="badgeRef">weber.col®</div>
+    </div>
+  </div>
+  <div class="hint" id="hint">👇 Choisissez une teinte ci-dessous</div>
+</div>
+
+<div class="fan-section">
+  <div class="fan-header">
+    <div class="fan-title">Nuancier façade — 24 teintes</div>
+    <div class="fan-logo">weber.col®</div>
+  </div>
+  <div class="fan-grid" id="fanGrid"></div>
+</div>
+
+<script>
+// ─── PALETTE WEBER ───
+const PALETTE = [
+  {name:'Blanc Neige',    code:'W001', hex:'#F4F0E8'},
+  {name:'Craie',          code:'W010', hex:'#EDE5D5'},
+  {name:'Ivoire',         code:'W020', hex:'#E8DECA'},
+  {name:'Lin',            code:'W030', hex:'#DCCFB0'},
+  {name:'Sable Fin',      code:'S001', hex:'#D2C09C'},
+  {name:'Grès Clair',     code:'S010', hex:'#C6B088'},
+  {name:'Pierre Blonde',  code:'S020', hex:'#C0A472'},
+  {name:'Miel',           code:'S030', hex:'#BA9858'},
+  {name:'Ocre Pâle',      code:'O001', hex:'#C8A455'},
+  {name:'Ocre Doré',      code:'O010', hex:'#B48C3C'},
+  {name:'Terre Dorée',    code:'O020', hex:'#A87030'},
+  {name:'Terre Cuite',    code:'O030', hex:'#A26240'},
+  {name:'Brique Douce',   code:'R001', hex:'#B46858'},
+  {name:'Saumon',         code:'R010', hex:'#C08070'},
+  {name:'Rose Ancien',    code:'R020', hex:'#BC9485'},
+  {name:'Argile',         code:'R030', hex:'#986858'},
+  {name:'Calcaire',       code:'G001', hex:'#C6BCA4'},
+  {name:'Pierre Grise',   code:'G010', hex:'#ACA494'},
+  {name:'Silex',          code:'G020', hex:'#949090'},
+  {name:'Ardoise',        code:'G030', hex:'#7C8484'},
+  {name:'Sauge',          code:'V001', hex:'#8C946E'},
+  {name:'Vert Cèdre',     code:'V010', hex:'#728468'},
+  {name:'Gris Anthracite',code:'F001', hex:'#606262'},
+  {name:'Charbon',        code:'F010', hex:'#4C5050'},
+];
+
+const canvas = document.getElementById('houseCanvas');
+const ctx    = canvas.getContext('2d');
+const CW = 860, CH = 440;
+
+// ─── UTILITAIRES COULEUR ───
+function hexRgb(hex) {
+  const h = hex.replace('#','');
+  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+}
+function lerpColor(h1, h2, t) {
+  const [r1,g1,b1] = hexRgb(h1), [r2,g2,b2] = hexRgb(h2);
+  return `#${[r1+(r2-r1)*t, g1+(g2-g1)*t, b1+(b2-b1)*t].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}`;
+}
+function shiftL(hex, d) {
+  const [r,g,b] = hexRgb(hex);
+  return `rgb(${Math.min(r+d,255)},${Math.min(g+d,255)},${Math.min(b+d,255)})`;
+}
+
+// ─── DESSIN MAISON ───
+function draw(col) {
+  ctx.clearRect(0,0,CW,CH);
+  drawSky();
+  drawGround();
+  drawHouse(col);
+  drawVegetation();
+  drawPath();
+}
+
+function drawSky() {
+  const g = ctx.createLinearGradient(0,0,0,CH*0.44);
+  g.addColorStop(0,'#5a8fc8'); g.addColorStop(0.65,'#9ac0de'); g.addColorStop(1,'#c0daf0');
+  ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH*0.44);
+  // Nuages
+  [
+    [100,50,1.0],[340,32,0.65],[580,48,0.8],[730,28,0.5]
+  ].forEach(([x,y,s]) => cloud(x,y,s));
+}
+
+function cloud(x,y,s) {
+  ctx.save(); ctx.globalAlpha = 0.55*s; ctx.fillStyle = '#fff';
+  [[0,0,20],[22,-7,26],[46,0,20],[68,5,16]].forEach(([dx,dy,r]) => {
+    ctx.beginPath(); ctx.arc(x+dx,y+dy,r*s,0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+}
+
+function drawGround() {
+  const g = ctx.createLinearGradient(0,CH*0.82,0,CH);
+  g.addColorStop(0,'#8a9e6a'); g.addColorStop(0.4,'#7a8e58'); g.addColorStop(1,'#667844');
+  ctx.fillStyle = g; ctx.fillRect(0,CH*0.82,CW,CH*0.18);
+  ctx.save(); ctx.globalAlpha = 0.3;
+  for (let x=0;x<CW;x+=9) {
+    const h = 3+Math.sin(x*0.31)*3+Math.sin(x*0.73)*1.5;
+    ctx.fillStyle = '#4e6035';
+    ctx.fillRect(x, CH*0.82-h, 2, h);
+  }
+  ctx.restore();
+}
+
+function drawHouse(col) {
+  const hx=85, hy=108, hw=590, hh=328;
+
+  // ombre au sol
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.beginPath(); ctx.ellipse(hx+hw/2, CH*0.83, hw*0.42, 14, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // ── Façade ──
+  facade(ctx, hx, hy, hw, hh, col);
+
+  // ── Toit ──
+  roof(ctx, hx, hy, hw);
+
+  // ── Soubassement ──
+  foundation(ctx, hx, hy+hh, hw);
+
+  // ── Fenêtres + volets ──
+  window2(ctx, hx+75,  hy+68,  94, 114);
+  window2(ctx, hx+416, hy+68,  94, 114);
+  window2(ctx, hx+75,  hy+220, 80, 98);
+  window2(ctx, hx+232, hy+220, 80, 98);
+  window2(ctx, hx+426, hy+220, 80, 98);
+
+  // ── Porte ──
+  door(ctx, hx+hw/2-40, hy+hh-178, 80, 135);
+
+  // ── Corniche + séparation d'étage ──
+  ctx.fillStyle = shiftL(col,14); ctx.fillRect(hx, hy+hh-3, hw, 5);
+  ctx.fillStyle = shiftL(col,8);  ctx.fillRect(hx, hy+192, hw, 4);
+}
+
+function facade(ctx, x, y, w, h, col) {
+  // Fond
+  ctx.fillStyle = col; ctx.fillRect(x,y,w,h);
+
+  // Dégradé lumière naturelle
+  const lg = ctx.createLinearGradient(x,y,x,y+h);
+  lg.addColorStop(0,'rgba(255,255,255,0.07)');
+  lg.addColorStop(0.5,'rgba(255,255,255,0.0)');
+  lg.addColorStop(1,'rgba(0,0,0,0.09)');
+  ctx.fillStyle=lg; ctx.fillRect(x,y,w,h);
+
+  // Dégradé latéral (ombre droite)
+  const rg = ctx.createLinearGradient(x+w-30,y,x+w,y);
+  rg.addColorStop(0,'rgba(0,0,0,0)'); rg.addColorStop(1,'rgba(0,0,0,0.11)');
+  ctx.fillStyle=rg; ctx.fillRect(x+w-30,y,30,h);
+
+  // Texture enduit (lignes très discrètes)
+  ctx.save(); ctx.globalAlpha=0.018; ctx.strokeStyle='#000'; ctx.lineWidth=0.6;
+  for (let ly=y; ly<y+h; ly+=2.6) {
+    ctx.beginPath(); ctx.moveTo(x,ly); ctx.lineTo(x+w,ly+0.4); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function roof(ctx, hx, hy, hw) {
+  const ovh=20, rh=112;
+
+  // Pente gauche
+  ctx.save();
+  const gl = ctx.createLinearGradient(hx,hy-rh,hx+hw/2,hy);
+  gl.addColorStop(0,'#c27040'); gl.addColorStop(0.6,'#a06030'); gl.addColorStop(1,'#8a4020');
+  ctx.fillStyle=gl;
+  ctx.beginPath(); ctx.moveTo(hx-ovh,hy+5); ctx.lineTo(hx+hw/2,hy-rh); ctx.lineTo(hx+hw/2,hy+5); ctx.closePath(); ctx.fill();
+
+  // Pente droite
+  const gr = ctx.createLinearGradient(hx+hw/2,hy-rh,hx+hw+ovh,hy);
+  gr.addColorStop(0,'#b26838'); gr.addColorStop(1,'#8e5025');
+  ctx.fillStyle=gr;
+  ctx.beginPath(); ctx.moveTo(hx+hw/2,hy-rh); ctx.lineTo(hx+hw+ovh,hy+5); ctx.lineTo(hx+hw/2,hy+5); ctx.closePath(); ctx.fill();
+
+  // Lignes tuiles
+  ctx.globalAlpha=0.09; ctx.strokeStyle='#000'; ctx.lineWidth=1;
+  for (let tx=hx-ovh; tx<hx+hw+ovh; tx+=20) {
+    const t=(tx-(hx-ovh))/(hw+ovh*2);
+    const ty1=hy+5, ty2=hy-rh+2;
+    ctx.beginPath(); ctx.moveTo(tx,ty1); ctx.lineTo(hx+hw/2, ty2); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+
+  // Génoise
+  ctx.fillStyle='#d4a86a'; ctx.fillRect(hx-ovh,hy+2,hw+ovh*2,8);
+  ctx.fillStyle='#c49858'; ctx.fillRect(hx-ovh+3,hy+10,hw+ovh*2-6,5);
+
+  // Faîtière
+  const fg = ctx.createRadialGradient(hx+hw/2,hy-rh,0,hx+hw/2,hy-rh,22);
+  fg.addColorStop(0,'#c07848'); fg.addColorStop(1,'#904828');
+  ctx.fillStyle=fg;
+  ctx.beginPath(); ctx.ellipse(hx+hw/2,hy-rh+3,22,11,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function foundation(ctx, x, y, w) {
+  const h=22;
+  ctx.fillStyle='#b0a888'; ctx.fillRect(x,y,w,h);
+  let px=x;
+  while(px<x+w) {
+    const pw=38+((Math.sin(px*0.28)*12+14)|0);
+    const hue=40+((Math.sin(px*0.2)*6)|0);
+    ctx.fillStyle=`hsl(${hue},18%,${62+((Math.sin(px*0.4)*5)|0)}%)`;
+    ctx.fillRect(px+1,y+1,pw-2,h-2);
+    ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=1;
+    ctx.strokeRect(px+1,y+1,pw-2,h-2);
+    px+=pw;
+  }
+}
+
+function window2(ctx, x, y, w, h) {
+  const sw=20;
+  // Encadrement
+  ctx.fillStyle='#d2c4a0'; ctx.fillRect(x-7,y-7,w+14,h+14);
+  ctx.fillStyle='#c4b690'; ctx.fillRect(x-4,y-4,w+8,h+8);
+
+  // Vitrage
+  const gg = ctx.createLinearGradient(x,y,x+w,y+h);
+  gg.addColorStop(0,'#b0cce0'); gg.addColorStop(0.4,'#d0e8f5'); gg.addColorStop(1,'#a0c0d8');
+  ctx.fillStyle=gg; ctx.fillRect(x,y,w,h);
+  // Croisillons
+  ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w/2,y+h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,y+h/2); ctx.lineTo(x+w,y+h/2); ctx.stroke();
+
+  // Volets verts
+  ['#485e3c','#3a4e2e'].forEach((c,side) => {
+    const vx = side===0 ? x-sw-5 : x+w+5;
+    ctx.fillStyle='#486040'; ctx.fillRect(vx,y-4,sw,h+8);
+    for(let sy=y-2;sy<y+h+6;sy+=6) { ctx.fillStyle='rgba(0,0,0,0.11)'; ctx.fillRect(vx,sy,sw,2.5); }
+    ctx.fillStyle='#2e4020';
+    if(side===0) ctx.fillRect(vx,y-4,3,h+8); else ctx.fillRect(vx+sw-3,y-4,3,h+8);
+  });
+}
+
+function door(ctx, x, y, w, h) {
+  // Encadrement pierre
+  ctx.fillStyle='#d2c4a0'; ctx.fillRect(x-7,y-7,w+14,h+7);
+  // Bois
+  const dg = ctx.createLinearGradient(x,y,x+w,y+h);
+  dg.addColorStop(0,'#6a4820'); dg.addColorStop(0.5,'#7e5428'); dg.addColorStop(1,'#563c16');
+  ctx.fillStyle=dg;
+  ctx.beginPath();
+  ctx.moveTo(x,y+h); ctx.lineTo(x,y+32);
+  ctx.quadraticCurveTo(x,y,x+w/2,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+32);
+  ctx.lineTo(x+w,y+h); ctx.closePath(); ctx.fill();
+  // Panneaux
+  ctx.strokeStyle='rgba(255,255,255,0.13)'; ctx.lineWidth=1.5;
+  ctx.strokeRect(x+7,y+38,w-14,h*0.28);
+  ctx.strokeRect(x+7,y+38+h*0.31,w-14,h*0.29);
+  // Poignée
+  ctx.fillStyle='#c8a030';
+  ctx.beginPath(); ctx.arc(x+w-14,y+h*0.54,5,0,Math.PI*2); ctx.fill();
+  // Marche
+  ctx.fillStyle='#c8be9c'; ctx.fillRect(x-10,y+h,w+20,8);
+}
+
+function drawVegetation() {
+  const hx=85, hy=108, hw=590, hh=328;
+  cypress(hx-28, hy+hh-16, 0.88);
+  cypress(hx+hw+8, hy+hh-16, 0.72);
+  bush(hx+28, hy+hh+22, 52, 28);
+  bush(hx+hw-76, hy+hh+22, 62, 26);
+  lavender(hx+hw/2-38, hy+hh+20);
+}
+
+function cypress(x, y, s) {
+  ctx.save(); ctx.translate(x,y);
+  for(let cy=0;cy>-138*s;cy-=5.5) {
+    const t=-cy/(138*s), cw=(17-t*13)*s;
+    ctx.fillStyle=`hsl(${118+t*10},${38+t*14}%,${20+t*8}%)`;
+    ctx.beginPath(); ctx.ellipse(0,cy,cw,4.5*s,0,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function bush(x,y,w,h) {
+  ctx.save();
+  for(let i=0;i<7;i++) {
+    const bx=x+(i/6)*w, by=y-h*0.38+Math.sin(i*1.2)*h*0.22, r=h*0.34+Math.sin(i*0.8)*h*0.1;
+    const bg=ctx.createRadialGradient(bx-r*.2,by-r*.2,0,bx,by,r);
+    bg.addColorStop(0,'#7a9658'); bg.addColorStop(1,'#48662e');
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(bx,by,r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function lavender(x,y) {
+  ctx.save();
+  for(let i=0;i<9;i++) {
+    const sx=x+i*10+(i%2)*4;
+    ctx.strokeStyle='#6a7840'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(sx,y+20); ctx.lineTo(sx,y-10); ctx.stroke();
+    ctx.fillStyle=`hsl(${258+i*4},48%,${53+i*2}%)`;
+    ctx.beginPath(); ctx.ellipse(sx,y-13,3.5,11,0,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawPath() {
+  const cx=CW/2;
+  ctx.save();
+  const pg=ctx.createLinearGradient(cx,CH*0.79,cx,CH);
+  pg.addColorStop(0,'#c8b88a'); pg.addColorStop(1,'#b4a478');
+  ctx.fillStyle=pg;
+  ctx.beginPath();
+  ctx.moveTo(cx-26,CH*0.82); ctx.lineTo(cx+26,CH*0.82);
+  ctx.lineTo(cx+58,CH); ctx.lineTo(cx-58,CH); ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// ─── ANIMATION FADE ───
+let curHex = PALETTE[0].hex;
+let fromHex = curHex;
+let toHex   = curHex;
+let fadeT   = 1, fadeStart = null;
+const FADE  = 550;
+let rafId   = null;
+
+function startFade(hex) {
+  fromHex  = curHex;
+  toHex    = hex;
+  fadeT    = 0; fadeStart = null;
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(tick);
+}
+
+function tick(ts) {
+  if(!fadeStart) fadeStart=ts;
+  fadeT = Math.min((ts-fadeStart)/FADE, 1);
+  const e = 1-Math.pow(1-fadeT, 2.8);
+  curHex = lerpColor(fromHex, toHex, e);
+  draw(curHex);
+  if(fadeT<1) rafId=requestAnimationFrame(tick);
+  else { curHex=toHex; draw(curHex); }
+}
+
+// ─── ÉVENTAIL ───
+function buildFan() {
+  const g = document.getElementById('fanGrid');
+  g.innerHTML = PALETTE.map((p,i)=>`
+    <div class="fan-card" data-i="${i}" title="${p.name}">
+      <div class="fan-color" style="background:${p.hex}"></div>
+      <div class="fan-info">
+        <div class="fan-name">${p.name}</div>
+        <div class="fan-code">${p.code}</div>
+      </div>
+    </div>`).join('');
+  g.querySelectorAll('.fan-card').forEach(c=>c.addEventListener('click',()=>pick(+c.dataset.i)));
+}
+
+function pick(i) {
+  const p = PALETTE[i];
+  document.querySelectorAll('.fan-card').forEach((c,j)=>c.classList.toggle('active',j===i));
+  document.getElementById('badgeSwatch').style.background = p.hex;
+  document.getElementById('badgeName').textContent = p.name;
+  document.getElementById('badgeRef').textContent  = `weber.col ${p.code}`;
+  document.getElementById('hint').style.opacity    = '0';
+  startFade(p.hex);
+}
+
+// ─── INIT ───
+buildFan();
+draw(curHex);
+document.getElementById('badgeSwatch').style.background = PALETTE[0].hex;
+setTimeout(()=>pick(0), 300);
+</script>
+</body>
+</html>
