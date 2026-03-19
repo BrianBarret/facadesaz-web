@@ -284,8 +284,8 @@ const chantiers = [
 ];
 
 const map = L.map('map', { center:[44.62,4.38], zoom:11, zoomControl:true, scrollWheelZoom:false });
-L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-  subdomains:'abc', maxZoom:18, attribution:'© OpenStreetMap France'
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+  maxZoom:18, attribution:'© Stadia Maps © OpenStreetMap'
 }).addTo(map);
 
 fetch('https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements/07-ardeche/07-ardeche.json')
