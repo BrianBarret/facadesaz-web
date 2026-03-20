@@ -283,7 +283,7 @@ const chantiers = [
   { lat:44.479, lng:4.239, town:"Joyeuse",               type:"peinture", color:"#c97d10", specialty:"Peinture",            icon:"🖌", photo:"https://brianbarret.github.io/facadesaz-web/photos/peinture2.jpg", desc:"Peinture intérieure et extérieure — rénovation complète, gamme produits professionnels." },
 ];
 
-const map = L.map('map', { center:[44.62,4.38], zoom:11, zoomControl:true, scrollWheelZoom:false });
+const map = L.map('map', { center:[44.62,4.38], zoom:10, zoomControl:true, scrollWheelZoom:false });
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   subdomains:'abcd', maxZoom:18, attribution:'© CartoDB © OpenStreetMap'
 }).addTo(map);
