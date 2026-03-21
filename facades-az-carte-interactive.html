@@ -143,24 +143,27 @@
 
   /* LIGHTBOX */
   .lightbox {
-    position: fixed; inset: 0; z-index: 99999;
-    background: rgba(0,0,0,0.72);
-    display: flex; align-items: center; justify-content: center;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 99999;
+    background: rgba(0,0,0,0.82);
+    display: flex; align-items: flex-start; justify-content: center;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 20px 12px 40px;
     opacity: 0; pointer-events: none;
     transition: opacity 0.22s ease;
-    backdrop-filter: blur(3px);
   }
   .lightbox.visible { opacity: 1; pointer-events: all; }
   .lightbox-card {
     background: #1c2b1c; border-radius: 14px; overflow: hidden;
-    width: 540px; max-width: 92vw; position: relative;
+    width: 100%; max-width: 480px; position: relative;
     box-shadow: 0 24px 60px rgba(0,0,0,0.65);
     border: 1px solid rgba(255,255,255,0.1);
     transform: scale(0.94); transition: transform 0.22s ease;
+    margin: auto;
   }
   .lightbox.visible .lightbox-card { transform: scale(1); }
   .lightbox-photo {
-    width: 100%; height: 310px;
+    width: 100%; height: 200px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 12px;
     background: #243024; position: relative; overflow: hidden;
@@ -179,7 +182,7 @@
     position: relative; z-index: 1;
   }
   .lightbox-stripe { height: 4px; width: 100%; }
-  .lightbox-body { padding: 22px 26px 26px; }
+  .lightbox-body { padding: 18px 20px 20px; }
   .lb-specialty {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 12px; font-weight: 700;
@@ -187,20 +190,33 @@
   }
   .lb-town {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 32px; font-weight: 800;
-    color: white; line-height: 1; margin-bottom: 10px;
+    font-size: 28px; font-weight: 800;
+    color: white; line-height: 1; margin-bottom: 8px;
   }
   .lb-desc { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  /* Bouton × coin haut droit — grand pour mobile */
   .lightbox-close {
-    position: absolute; top: 14px; right: 14px;
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.15);
-    color: white; font-size: 18px; cursor: pointer;
+    position: absolute; top: 10px; right: 10px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(0,0,0,0.5); border: 1.5px solid rgba(255,255,255,0.25);
+    color: white; font-size: 22px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s; z-index: 10;
-    line-height: 1;
+    z-index: 20; line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .lightbox-close:hover { background: rgba(255,255,255,0.15); }
+  .lightbox-close:active { background: rgba(255,255,255,0.2); }
+  /* Bouton fermer bas — filet de sécurité mobile */
+  .lb-close-btn {
+    display: block; width: 100%; border: none;
+    background: rgba(255,255,255,0.06);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5); font-size: 13px; font-family: 'Barlow', sans-serif;
+    padding: 14px; text-align: center; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .lb-close-btn:active { background: rgba(255,255,255,0.15); }
 
   /* LEAFLET */
   .leaflet-control-zoom { border: none !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important; }
@@ -252,11 +268,11 @@
 </div>
 
 <!-- LIGHTBOX -->
-<div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+<div id="lightbox" class="lightbox">
   <div class="lightbox-card">
     <button class="lightbox-close" onclick="closeLightbox()">×</button>
     <div class="lightbox-photo" style="padding:0;">
-      <img id="lbPhoto" src="" alt="" style="width:100%;height:310px;object-fit:cover;display:block;">
+      <img id="lbPhoto" src="" alt="" style="width:100%;height:200px;object-fit:cover;display:block;">
     </div>
     <div class="lightbox-stripe" id="lbStripe"></div>
     <div class="lightbox-body">
@@ -264,6 +280,7 @@
       <div class="lb-town" id="lbTown"></div>
       <div class="lb-desc" id="lbDesc"></div>
     </div>
+    <button class="lb-close-btn" onclick="closeLightbox()">Fermer ✕</button>
   </div>
 </div>
 
@@ -354,12 +371,13 @@ function openLightbox(ch) {
   document.getElementById('lightbox').classList.add('visible');
 }
 
-function closeLightbox(e) {
-  if (!e || e.target === document.getElementById('lightbox') || e.target.classList.contains('lightbox-close')) {
-    document.getElementById('lightbox').classList.remove('visible');
-  }
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('visible');
 }
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox({target:document.getElementById('lightbox')}); });
+document.getElementById('lightbox').addEventListener('click', function(e){
+  if(e.target === this) closeLightbox();
+});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
 
 // MARQUEURS
 const allMarkers = [];
