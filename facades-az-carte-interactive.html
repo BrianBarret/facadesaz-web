@@ -301,7 +301,7 @@ const chantiers = [
 ];
 
 const map = L.map('map', { center:[44.62,4.38], zoom:10, zoomControl:true, scrollWheelZoom:false });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png?key=cb1_53be_1_7f8bb6d0ff2cf5dd316183e6', {
   subdomains:'abcd', maxZoom:18, attribution:'© CartoDB © OpenStreetMap'
 }).addTo(map);
 
